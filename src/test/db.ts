@@ -1,6 +1,10 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { PGlite } from "@electric-sql/pglite";
+import { pg_trgm } from "@electric-sql/pglite/contrib/pg_trgm";
+
+// Postgres extensions Supabase provides that our migrations use.
+const EXTENSIONS = { pg_trgm };
 
 const MIGRATIONS_DIR = join(process.cwd(), "supabase", "migrations");
 
@@ -11,6 +15,7 @@ const MIGRATIONS_DIR = join(process.cwd(), "supabase", "migrations");
  * auth.uid() reads a session setting so tests can act as any user.
  */
 const SUPABASE_STUB = `
+  create schema extensions;
   create schema auth;
   create table auth.users (id uuid primary key default gen_random_uuid(), email text);
   create function auth.uid() returns uuid language sql stable as $$
@@ -48,7 +53,7 @@ export function migrationFiles(): string[] {
 }
 
 async function buildMigratedDb(): Promise<PGlite> {
-  const db = new PGlite();
+  const db = new PGlite({ extensions: EXTENSIONS });
   await db.exec(SUPABASE_STUB);
   for (const file of migrationFiles()) {
     await db.exec(readFileSync(join(MIGRATIONS_DIR, file), "utf8"));
@@ -73,9 +78,19 @@ function migratedSnapshot(): Promise<File | Blob> {
 
 /** A fresh in-memory Postgres with every migration applied, in order. */
 export async function createTestDb(): Promise<PGlite> {
-  const db = new PGlite({ loadDataDir: await migratedSnapshot() });
+  const db = new PGlite({ loadDataDir: await migratedSnapshot(), extensions: EXTENSIONS });
   await db.waitReady;
   openDbs.add(db);
+  return db;
+}
+
+/**
+ * A database shared by every test in one file (create it in beforeAll, close
+ * it in afterAll). Not closed after each test. Use only for read-only tests.
+ */
+export async function createSharedTestDb(): Promise<PGlite> {
+  const db = await createTestDb();
+  openDbs.delete(db);
   return db;
 }
 
