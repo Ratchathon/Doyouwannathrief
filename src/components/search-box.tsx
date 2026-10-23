@@ -95,7 +95,7 @@ export function SearchBox({
   const expanded = open && flat.length > 0;
 
   useEffect(() => {
-    if (query.length < MIN_CHARS) return;
+    if (!open || query.length < MIN_CHARS) return;
     const request = ++latest.current;
     const timer = setTimeout(() => {
       fetchSuggestions(query)
@@ -107,7 +107,7 @@ export function SearchBox({
         });
     }, debounceMs);
     return () => clearTimeout(timer);
-  }, [query, fetchSuggestions, debounceMs]);
+  }, [open, query, fetchSuggestions, debounceMs]);
 
   const optionId = (i: number) => `${id}-opt-${i}`;
 

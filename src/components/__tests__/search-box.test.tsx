@@ -30,6 +30,13 @@ describe("SearchBox", () => {
     expect(input.closest("form")).toHaveAttribute("action", "/search");
   });
 
+  it("does not ask for suggestions for a prefilled box nobody has touched", async () => {
+    const fetcher = vi.fn<(q: string) => Promise<Suggestions>>(async () => polo);
+    render(<SearchBox defaultValue="polo" fetchSuggestions={fetcher} debounceMs={0} />);
+    await new Promise((r) => setTimeout(r, 20));
+    expect(fetcher).not.toHaveBeenCalled();
+  });
+
   it("does not ask for suggestions until 2 characters are typed", async () => {
     const { user, input, fetcher } = setup();
     await user.type(input, "p");
