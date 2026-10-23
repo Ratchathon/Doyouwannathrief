@@ -137,3 +137,23 @@ describe("marking sold", () => {
     await setStatus(id, "sold");
   });
 });
+
+describe("reserved and sold items", () => {
+  async function reservedItem() {
+    const id = await newProduct();
+    await addPhotos(id, ["front", "back", "label"]);
+    await setStatus(id, "active");
+    await db.query("update products set status = 'reserved' where id = $1", [id]);
+    return id;
+  }
+
+  it("cannot have their details changed, even directly", async () => {
+    const id = await reservedItem();
+    await expectRejectedByRule(db.query("update products set price_satang = 100 where id = $1", [id]));
+  });
+
+  it("can still move on to sold", async () => {
+    const id = await reservedItem();
+    await setStatus(id, "sold");
+  });
+});
