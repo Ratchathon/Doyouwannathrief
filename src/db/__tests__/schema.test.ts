@@ -30,7 +30,7 @@ async function insertProduct(shopId: string, overrides: Record<string, unknown> 
   const row = {
     shop_id: shopId,
     title: "เสื้อเชิ้ตเดนิม Levi's ยุค 90",
-    category: "tops",
+    category: "tops_shirts",
     size_label: "L",
     price_satang: 89000,
     condition: "good",

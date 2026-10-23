@@ -169,7 +169,7 @@ export async function createProduct(
 ): Promise<string> {
   const res = await db.query<{ id: string }>(
     `insert into products (shop_id, title, category, size_label, price_satang, condition, has_flaws)
-     values ($1, $2, 'tops', 'M', 50000, 'good', false) returning id`,
+     values ($1, $2, 'tops_shirts', 'M', 50000, 'good', false) returning id`,
     [shopId, title],
   );
   const id = res.rows[0].id;

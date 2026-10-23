@@ -10,7 +10,7 @@ let shopId: string;
 
 function save(productId: string | null, overrides: { title?: string; styles?: string[]; shopId?: string } = {}) {
   return db.query<{ save_listing: string }>(
-    `select public.save_listing($1, $2, $3, 'Levi''s', '', 'tops', 'L', 89000, 'good', false, null,
+    `select public.save_listing($1, $2, $3, 'Levi''s', '', 'tops_shirts', 'L', 89000, 'good', false, null,
        58, 74, 50, null, $4)`,
     [productId, overrides.shopId ?? shopId, overrides.title ?? "เสื้อเชิ้ตเดนิม", `{${(overrides.styles ?? ["vintage"]).join(",")}}`],
   );

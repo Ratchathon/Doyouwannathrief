@@ -1,12 +1,19 @@
+/**
+ * Item categories. English labels go in menus and headings, Thai in
+ * descriptions. Order matches the database enum (a test checks it).
+ */
 export const CATEGORIES = {
-  tops: "เสื้อ",
-  outerwear: "เสื้อคลุม/แจ็กเก็ต",
-  bottoms: "กางเกง/กระโปรง",
-  dresses: "เดรส",
-  shoes: "รองเท้า",
-  bags: "กระเป๋า",
-  accessories: "เครื่องประดับ",
-  headwear: "หมวก",
+  tees: { en: "TEES", th: "เสื้อยืด" },
+  tops_shirts: { en: "TOPS & SHIRTS", th: "เสื้อเชิ้ตและท็อป" },
+  sweats: { en: "SWEATS", th: "ฮู้ดและสเวต" },
+  outerwear: { en: "OUTERWEAR", th: "แจ็กเก็ตและเสื้อคลุม" },
+  bottoms: { en: "BOTTOMS", th: "กางเกงและกระโปรง" },
+  denim: { en: "DENIM", th: "เดนิม" },
+  dresses: { en: "DRESSES", th: "เดรส" },
+  shoes: { en: "SHOES", th: "รองเท้า" },
+  bags: { en: "BAGS", th: "กระเป๋า" },
+  accessories: { en: "ACCESSORIES", th: "เครื่องประดับ" },
+  headwear: { en: "HEADWEAR", th: "หมวก" },
 } as const;
 
 export const CONDITIONS = {
@@ -29,10 +36,14 @@ export const MEASUREMENT_LABELS: Record<Measurement, string> = {
 
 /** Measurements a buyer needs to judge fit, by category. */
 export const REQUIRED_MEASUREMENTS: Record<Category, Measurement[]> = {
-  tops: ["chest", "length", "shoulder"],
+  tees: ["chest", "length", "shoulder"],
+  tops_shirts: ["chest", "length", "shoulder"],
+  sweats: ["chest", "length", "shoulder"],
   outerwear: ["chest", "length", "shoulder"],
-  dresses: ["chest", "length"],
   bottoms: ["waist", "length"],
+  // Denim covers jeans and jackets; chest or waist are entered when they apply.
+  denim: ["length"],
+  dresses: ["chest", "length"],
   shoes: [],
   bags: [],
   accessories: [],

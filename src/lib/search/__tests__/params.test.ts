@@ -21,11 +21,11 @@ describe("parseItemSearch", () => {
 
   it("reads every filter", () => {
     const args = parseItemSearch(
-      params("q=+levi++เดนิม+&category=tops&style=vintage&province=เชียงใหม่&min=500&max=1,500&size=M&sort=price_asc&page=3"),
+      params("q=+levi++เดนิม+&category=tops_shirts&style=vintage&province=เชียงใหม่&min=500&max=1,500&size=M&sort=price_asc&page=3"),
     );
     expect(args).toEqual({
       p_query: "levi เดนิม",
-      p_category: "tops",
+      p_category: "tops_shirts",
       p_style: "vintage",
       p_province: "เชียงใหม่",
       p_min_satang: 50000,

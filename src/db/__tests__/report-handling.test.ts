@@ -111,7 +111,7 @@ describe("reasons in the app and the database", () => {
     );
     const product = await db.query<{ id: string }>(
       `insert into products (shop_id, title, category, size_label, price_satang, condition, has_flaws)
-       values ($1, 'เสื้อ', 'tops', 'M', 100, 'good', false) returning id`,
+       values ($1, 'เสื้อ', 'tops_shirts', 'M', 100, 'good', false) returning id`,
       [shop.rows[0].id],
     );
     const ids = { product: product.rows[0].id, shop: shop.rows[0].id, website: null };

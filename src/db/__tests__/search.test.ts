@@ -41,7 +41,7 @@ async function item(
   const res = await db.query<{ id: string }>(
     `insert into products (shop_id, title, brand, category, size_label, price_satang, condition, has_flaws, created_at)
      values ($1, $2, $3, $4::product_category, $5, $6, 'good', false, now() + make_interval(secs => $7)) returning id`,
-    [shopId, title, opts.brand ?? null, opts.category ?? "tops", opts.size ?? "M", opts.baht * 100, clock++],
+    [shopId, title, opts.brand ?? null, opts.category ?? "tops_shirts", opts.size ?? "M", opts.baht * 100, clock++],
   );
   const id = res.rows[0].id;
   for (const style of opts.styles) {

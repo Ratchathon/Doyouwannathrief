@@ -73,7 +73,7 @@ const listingForm = {
   title: "เสื้อเชิ้ตเดนิม",
   brand: "Levi's",
   description: "",
-  category: "tops",
+  category: "tops_shirts",
   sizeLabel: "L",
   price: "1,290",
   condition: "good",

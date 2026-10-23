@@ -182,7 +182,7 @@ describe("products", () => {
     await expectBlockedByPolicy(
       db.query(
         `insert into products (shop_id, title, category, size_label, price_satang, condition, has_flaws)
-         values ($1, 'เสื้อ', 'tops', 'M', 50000, 'good', false)`,
+         values ($1, 'เสื้อ', 'tops_shirts', 'M', 50000, 'good', false)`,
         [pendingShopId],
       ),
     );
@@ -193,7 +193,7 @@ describe("products", () => {
     await expectBlockedByPolicy(
       db.query(
         `insert into products (shop_id, title, category, size_label, price_satang, condition, has_flaws)
-         values ($1, 'เสื้อ', 'tops', 'M', 50000, 'good', false)`,
+         values ($1, 'เสื้อ', 'tops_shirts', 'M', 50000, 'good', false)`,
         [approvedShopId],
       ),
     );

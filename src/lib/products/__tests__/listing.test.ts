@@ -13,7 +13,7 @@ const valid: ListingInput = {
   title: "เสื้อเชิ้ตเดนิม Levi's ยุค 90",
   brand: "Levi's",
   description: "ผ้าหนา สีซีดสวยตามธรรมชาติ",
-  category: "tops",
+  category: "tops_shirts",
   sizeLabel: "L",
   price: "890",
   condition: "good",
@@ -27,14 +27,23 @@ const valid: ListingInput = {
 };
 
 describe("catalog labels", () => {
-  it("has a Thai label for every category and condition the database allows", () => {
-    expect(Object.keys(CATEGORIES).sort()).toEqual(
-      ["accessories", "bags", "bottoms", "dresses", "headwear", "outerwear", "shoes", "tops"].sort(),
+  it("labels every category in English for menus and in Thai for descriptions", () => {
+    for (const { en, th } of Object.values(CATEGORIES)) {
+      expect(en).toMatch(/^[A-Z &]+$/);
+      expect(th).toMatch(/[\u0E00-\u0E7F]/);
+    }
+    for (const label of Object.values(CONDITIONS)) expect(label).toMatch(/[\u0E00-\u0E7F]/);
+  });
+
+  it("lists categories and conditions in the order the database allows", () => {
+    expect(Object.keys(CATEGORIES)).toEqual(
+      ["tees", "tops_shirts", "sweats", "outerwear", "bottoms", "denim", "dresses", "shoes", "bags", "accessories", "headwear"],
     );
     expect(Object.keys(CONDITIONS).sort()).toEqual(["fair", "good", "like_new"]);
-    for (const label of [...Object.values(CATEGORIES), ...Object.values(CONDITIONS)]) {
-      expect(label).toMatch(/[฀-๿]/);
-    }
+  });
+
+  it("requires a length for denim, since it covers both jeans and jackets", () => {
+    expect(REQUIRED_MEASUREMENTS.denim).toEqual(["length"]);
   });
 
   it("defines required measurements for every category", () => {
@@ -66,7 +75,7 @@ describe("validateListing", () => {
         title: "เสื้อเชิ้ตเดนิม Levi's ยุค 90",
         brand: "Levi's",
         description: "ผ้าหนา สีซีดสวยตามธรรมชาติ",
-        category: "tops",
+        category: "tops_shirts",
         sizeLabel: "L",
         priceSatang: 89000,
         condition: "good",

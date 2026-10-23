@@ -10,7 +10,7 @@ let shopId: string;
 async function newProduct(hasFlaws = false) {
   const res = await db.query<{ id: string }>(
     `insert into products (shop_id, title, category, size_label, price_satang, condition, has_flaws)
-     values ($1, 'เสื้อ', 'tops', 'M', 50000, 'good', $2) returning id`,
+     values ($1, 'เสื้อ', 'tops_shirts', 'M', 50000, 'good', $2) returning id`,
     [shopId, hasFlaws],
   );
   return res.rows[0].id;
@@ -67,7 +67,7 @@ describe("putting an item on sale", () => {
     await expectRejectedByRule(
       db.query(
         `insert into products (shop_id, title, category, size_label, price_satang, condition, has_flaws, status)
-         values ($1, 'เสื้อ', 'tops', 'M', 50000, 'good', false, 'active')`,
+         values ($1, 'เสื้อ', 'tops_shirts', 'M', 50000, 'good', false, 'active')`,
         [shopId],
       ),
     );
