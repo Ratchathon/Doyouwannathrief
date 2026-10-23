@@ -226,7 +226,7 @@ function ShopLinks({ shops, onNavigate, compact = false }: { shops: NavShop[]; o
         </ul>
       )}
       <Link
-        href="/discover/shops"
+        href="/shops"
         onClick={onNavigate}
         className="mt-6 inline-flex h-11 items-center text-[17px] tracking-button text-fg underline-offset-8 hover:underline"
       >

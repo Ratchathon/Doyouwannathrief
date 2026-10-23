@@ -50,7 +50,7 @@ describe("HomeView", () => {
     expect(link).toHaveAttribute("href", "/tuekdaeng");
     expect(link).toHaveTextContent("กรุงเทพมหานคร");
     expect(link).toHaveTextContent("VINTAGE");
-    expect(within(section).getByRole("link", { name: "SEE ALL" })).toHaveAttribute("href", "/discover/shops");
+    expect(within(section).getByRole("link", { name: "SEE ALL" })).toHaveAttribute("href", "/shops");
   });
 
   it("invites shops to open when there are none yet", () => {

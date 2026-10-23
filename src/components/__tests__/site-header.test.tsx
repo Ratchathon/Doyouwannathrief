@@ -40,7 +40,7 @@ describe("SiteHeader", () => {
     await user.click(screen.getByRole("button", { name: "SHOPS" }));
     const menu = screen.getByRole("region", { name: "SHOPS" });
     expect(within(menu).getByRole("link", { name: /TUEKDAENG VINTAGE/ })).toHaveAttribute("href", "/tuekdaeng");
-    expect(within(menu).getByRole("link", { name: "ALL SHOPS" })).toHaveAttribute("href", "/discover/shops");
+    expect(within(menu).getByRole("link", { name: "ALL SHOPS" })).toHaveAttribute("href", "/shops");
   });
 
   it("keeps only one menu open at a time", async () => {

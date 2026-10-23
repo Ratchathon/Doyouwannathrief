@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { SearchBox } from "@/components/search-box";
+import { ShopDiscRow } from "@/components/shop-disc";
 import type { NavStyle } from "@/components/site-header";
 
-export type HomeShop = { slug: string; display_name: string; province: string; style: string | null };
+export type HomeShop = { slug: string; display_name: string; province: string; style: string | null; isNew?: boolean };
 
 // Uneven pillar heights give the style row its skyline; repeats if there are more styles.
 const PILLAR_HEIGHTS = [300, 380, 250, 340, 280, 360];
@@ -65,7 +66,7 @@ export function HomeView({ styles, shops }: { styles: NavStyle[]; shops: HomeSho
           <h2 id="new-shops" className="font-display text-[28px] font-normal tracking-[0.02em] md:text-[34px]">
             NEW SHOPS
           </h2>
-          <Link href="/discover/shops" className="font-display text-[17px] tracking-button text-fg-soft hover:text-fg">
+          <Link href="/shops" className="font-display text-[17px] tracking-button text-fg-soft hover:text-fg">
             SEE ALL
           </Link>
         </div>
@@ -77,28 +78,9 @@ export function HomeView({ styles, shops }: { styles: NavStyle[]; shops: HomeSho
             </Link>
           </div>
         ) : (
-          <ul className="grid gap-x-16 md:grid-cols-2">
-            {shops.map((shop) => (
-              <li key={shop.slug}>
-                <Link
-                  href={`/${shop.slug}`}
-                  className="flex items-center justify-between gap-6 border-b border-line py-6 text-fg hover:text-white md:py-7"
-                >
-                  <span className="flex min-w-0 flex-col gap-1">
-                    <span className="font-display text-[30px] leading-[1.05] tracking-[0.01em] break-words md:text-[40px]">
-                      {shop.display_name}
-                    </span>
-                    <span className="text-[15px] text-muted">{shop.province}</span>
-                  </span>
-                  {shop.style && (
-                    <span className="shrink-0 font-label text-xs font-semibold tracking-[0.12em] text-faint">
-                      {shop.style.toUpperCase()}
-                    </span>
-                  )}
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <div className="pt-6">
+            <ShopDiscRow shops={shops} size="lg" />
+          </div>
         )}
       </section>
 
