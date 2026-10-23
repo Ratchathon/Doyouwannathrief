@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { ProductSkeleton } from "@/components/skeleton";
 import { ProductView } from "@/components/product-view";
 import { getProductPage } from "@/lib/catalog/shop";
 import { formatBaht } from "@/lib/search/results";
@@ -25,7 +26,7 @@ async function ProductContent(props: PageProps<"/[shop]/[id]">) {
 
 export default function ProductPage(props: PageProps<"/[shop]/[id]">) {
   return (
-    <Suspense fallback={<p className="px-4 py-16 text-center text-muted md:px-10">กำลังโหลด…</p>}>
+    <Suspense fallback={<ProductSkeleton />}>
       <ProductContent {...props} />
     </Suspense>
   );

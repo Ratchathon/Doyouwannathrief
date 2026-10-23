@@ -1,5 +1,6 @@
 import { ResultsView } from "@/components/results-view";
 import { SearchBox } from "@/components/search-box";
+import { GridSkeleton } from "@/components/skeleton";
 import { getNavData } from "@/lib/catalog/nav";
 import { getResults, pageLinks } from "@/lib/catalog/results";
 import { resultsArgs, type ResultsScope } from "@/lib/search/results";
@@ -65,10 +66,5 @@ export async function ResultsPage({
 }
 
 export function ResultsFallback({ title }: { title: string }) {
-  return (
-    <div className="px-4 pt-4 md:px-8 md:pt-5" aria-busy="true">
-      <h1 className="font-display text-[34px] leading-none font-normal tracking-[0.02em] md:text-[44px]">{title}</h1>
-      <p className="mt-6 text-muted">กำลังโหลด…</p>
-    </div>
-  );
+  return <GridSkeleton title={title} />;
 }

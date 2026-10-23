@@ -28,8 +28,13 @@ export const viewport: Viewport = {
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   const [nav, year] = await Promise.all([getNavData(), currentYear()]);
   return (
-    <html lang="th" className="h-full antialiased">
-      <body className="flex min-h-full flex-col">
+    <html
+      lang="th"
+      className="h-full antialiased"
+      // Inline so the page stays dark even if a stylesheet is late or swapped mid-navigation.
+      style={{ backgroundColor: "#0b0c0e", color: "#e6e8eb", colorScheme: "dark" }}
+    >
+      <body className="flex min-h-full flex-col" style={{ backgroundColor: "#0b0c0e", color: "#e6e8eb" }}>
         <a
           href="#main"
           className="sr-only z-50 bg-fg px-4 py-2 text-ink focus:not-sr-only focus:fixed focus:top-2 focus:left-2"

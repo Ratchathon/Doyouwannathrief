@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { GridSkeleton } from "@/components/skeleton";
 import { toUrlParams } from "@/components/results-page";
 import { ShopView } from "@/components/shop-view";
 import { getShopPage, shopArgs } from "@/lib/catalog/shop";
@@ -22,7 +23,7 @@ async function ShopContent(props: PageProps<"/[shop]">) {
 
 export default function ShopPage(props: PageProps<"/[shop]">) {
   return (
-    <Suspense fallback={<p className="px-4 py-16 text-center text-muted md:px-10">กำลังโหลด…</p>}>
+    <Suspense fallback={<GridSkeleton />}>
       <ShopContent {...props} />
     </Suspense>
   );
