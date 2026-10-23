@@ -84,7 +84,7 @@ describe("shops", () => {
   it("lets a signed-in user apply for a shop as themselves", async () => {
     await actAs(db, "authenticated", strangerId);
     await db.query(
-      "insert into shops (owner_id, slug, display_name, province) values ($1, 'new-shop', 'ร้านใหม่', 'เชียงใหม่')",
+      "insert into shops (owner_id, slug, display_name, province, social_links) values ($1, 'new-shop', 'ร้านใหม่', 'เชียงใหม่', '{https://www.instagram.com/newshop}')",
       [strangerId],
     );
     await actAsSystem(db);
