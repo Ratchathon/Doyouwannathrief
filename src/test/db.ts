@@ -27,8 +27,7 @@ export function migrationFiles(): string[] {
     .sort();
 }
 
-/** A fresh in-memory Postgres with every migration applied, in order. */
-export async function createTestDb(): Promise<PGlite> {
+async function buildMigratedDb(): Promise<PGlite> {
   const db = new PGlite();
   await db.exec(SUPABASE_STUB);
   for (const file of migrationFiles()) {
@@ -36,6 +35,37 @@ export async function createTestDb(): Promise<PGlite> {
   }
   return db;
 }
+
+// Starting Postgres is the slow part (~2.5s); loading a snapshot is ~0.4s.
+// So each test worker migrates once, snapshots, and every test starts from a
+// fresh copy of that snapshot. Tests stay fully isolated.
+let snapshot: Promise<File | Blob> | null = null;
+const openDbs = new Set<PGlite>();
+
+function migratedSnapshot(): Promise<File | Blob> {
+  snapshot ??= buildMigratedDb().then(async (db) => {
+    const dump = await db.dumpDataDir("none");
+    await db.close();
+    return dump;
+  });
+  return snapshot;
+}
+
+/** A fresh in-memory Postgres with every migration applied, in order. */
+export async function createTestDb(): Promise<PGlite> {
+  const db = new PGlite({ loadDataDir: await migratedSnapshot() });
+  await db.waitReady;
+  openDbs.add(db);
+  return db;
+}
+
+/** Frees databases created by the finished test. Called from vitest.setup.ts. */
+export async function closeTestDbs(): Promise<void> {
+  const dbs = [...openDbs];
+  openDbs.clear();
+  await Promise.all(dbs.map((db) => db.close().catch(() => undefined)));
+}
+globalThis.__closeTestDbs = closeTestDbs;
 
 /** Inserts an auth user plus its profile row (created by trigger) and returns the id. */
 export async function createUser(db: PGlite, email = `${crypto.randomUUID()}@test.dev`): Promise<string> {

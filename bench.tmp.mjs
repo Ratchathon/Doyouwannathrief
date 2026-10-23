@@ -1,0 +1,16 @@
+import { PGlite } from "@electric-sql/pglite";
+import { readdirSync, readFileSync } from "node:fs";
+const dir = process.cwd() + "/supabase/migrations";
+const stub = `create schema auth; create table auth.users (id uuid primary key default gen_random_uuid(), email text);
+create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid $$;
+create role anon nologin; create role authenticated nologin; grant usage on schema public, auth to anon, authenticated; grant execute on function auth.uid() to anon, authenticated;`;
+let t = performance.now();
+const db = new PGlite(); await db.waitReady;
+console.log("init", Math.round(performance.now() - t)); t = performance.now();
+await db.exec(stub); for (const f of readdirSync(dir).sort()) await db.exec(readFileSync(dir + "/" + f, "utf8"));
+console.log("migrate", Math.round(performance.now() - t)); t = performance.now();
+const dump = await db.dumpDataDir("none");
+console.log("dump", Math.round(performance.now() - t), dump.size); t = performance.now();
+const db2 = new PGlite({ loadDataDir: dump }); await db2.waitReady;
+const r = await db2.query("select count(*)::int n from styles");
+console.log("load", Math.round(performance.now() - t), r.rows[0]);
