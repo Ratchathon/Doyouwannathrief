@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { act, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ProductView } from "@/components/product-view";
@@ -31,7 +31,20 @@ const product: ProductPage = {
 
 const mainPhoto = () => screen.getByRole("img", { name: /เสื้อยืดทัวร์ ปี 1998 ·/ });
 
+afterEach(() => vi.unstubAllGlobals());
+
 describe("ProductView", () => {
+  it("reports one view of the item", () => {
+    const fetchMock = vi.fn().mockResolvedValue(new Response(null, { status: 204 }));
+    vi.stubGlobal("fetch", fetchMock);
+    render(<ProductView product={product} />);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    const [url, init] = fetchMock.mock.calls[0];
+    expect(url).toBe("/api/views");
+    expect(init).toMatchObject({ method: "POST", keepalive: true });
+    expect(JSON.parse(init.body)).toEqual({ productId: "i1" });
+  });
+
   it("shows the essentials: brand, title, price, size and condition", () => {
     render(<ProductView product={product} />);
     expect(screen.getByRole("heading", { level: 1, name: "เสื้อยืดทัวร์ ปี 1998" })).toBeInTheDocument();

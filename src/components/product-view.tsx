@@ -63,6 +63,16 @@ export function ProductView({ product }: { product: ProductPage }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Count one view per page visit; failures are harmless and ignored.
+  useEffect(() => {
+    fetch("/api/views", {
+      method: "POST",
+      keepalive: true,
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ productId: product.id }),
+    }).catch(() => {});
+  }, [product.id]);
+
   const photo = product.photos.find((p) => p.kind === current) ?? product.photos[0];
   const status = product.status;
 
