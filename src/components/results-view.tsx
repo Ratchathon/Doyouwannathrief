@@ -132,7 +132,16 @@ export function ResultsView(props: ResultsViewProps) {
   );
 }
 
-export function ItemCard({ item, showShop = true }: { item: ResultItem; showShop?: boolean }) {
+export function ItemCard({
+  item,
+  showShop = true,
+  badge,
+}: {
+  item: ResultItem;
+  showShop?: boolean;
+  /** Short label on the photo, e.g. a view count. */
+  badge?: string;
+}) {
   return (
     <Link href={`/${item.shop_slug}/${item.id}`} className="group flex flex-col gap-2 text-fg">
       <span className="relative block aspect-[4/5] overflow-hidden border border-[#23262a] bg-gradient-to-b from-[#1a1c20] to-[#121316]">
@@ -154,6 +163,11 @@ export function ItemCard({ item, showShop = true }: { item: ResultItem; showShop
           >
             <path d="M22 8l-14 8 5 12 7-3v31h24V25l7 3 5-12-14-8c-2 4-6 6-10 6s-8-2-10-6z" />
           </svg>
+        )}
+        {badge && item.status !== "reserved" && (
+          <span className="chrome absolute top-2.5 left-2.5 inline-flex h-6 items-center rounded-full px-2.5 font-label text-[10px] font-bold tracking-[0.1em]">
+            {badge}
+          </span>
         )}
         {item.status === "reserved" && (
           <span className="chrome absolute top-2.5 left-2.5 inline-flex h-6 items-center rounded-full px-2.5 font-label text-[11px] font-bold tracking-[0.1em]">
