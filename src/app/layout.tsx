@@ -15,6 +15,7 @@ import { APP_NAME } from "@/lib/config";
 import { subscribeNewsletter } from "@/lib/newsletter/actions";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
   title: { default: APP_NAME, template: `%s · ${APP_NAME}` },
   description: "รวมร้านเสื้อผ้ามือสองที่คัดสไตล์แล้วจากทั่วประเทศ",
 };

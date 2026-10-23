@@ -132,7 +132,7 @@ export function ResultsView(props: ResultsViewProps) {
   );
 }
 
-function ItemCard({ item }: { item: ResultItem }) {
+export function ItemCard({ item, showShop = true }: { item: ResultItem; showShop?: boolean }) {
   return (
     <Link href={`/${item.shop_slug}/${item.id}`} className="group flex flex-col gap-2 text-fg">
       <span className="relative block aspect-[4/5] overflow-hidden border border-[#23262a] bg-gradient-to-b from-[#1a1c20] to-[#121316]">
@@ -169,7 +169,7 @@ function ItemCard({ item }: { item: ResultItem }) {
         <span className="font-display text-xl tracking-[0.02em]">{formatBaht(item.price_satang)}</span>
         <span className="text-[13px] text-faint">SIZE {item.size_label}</span>
       </span>
-      <span className="text-[13px] text-faint">{item.shop_name}</span>
+      {showShop && <span className="text-[13px] text-faint">{item.shop_name}</span>}
     </Link>
   );
 }
