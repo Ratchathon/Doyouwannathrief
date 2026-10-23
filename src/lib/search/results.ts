@@ -21,7 +21,11 @@ export function formatBaht(satang: number): string {
   return `฿${baht.format(Math.round(satang / 100))}`;
 }
 
+/** Sample shops' photos ship with the site (public/samples) instead of living in storage. */
+const SAMPLE_PREFIX = "samples/";
+
 export function photoUrl(supabaseUrl: string, path: string): string {
+  if (path.startsWith(SAMPLE_PREFIX)) return `/${path}`;
   const encoded = path.split("/").map(encodeURIComponent).join("/");
   return `${supabaseUrl}/storage/v1/object/public/${PHOTO_BUCKET}/${encoded}`;
 }

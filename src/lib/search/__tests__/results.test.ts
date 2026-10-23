@@ -21,6 +21,10 @@ describe("photoUrl", () => {
     );
   });
 
+  it("serves sample shop photos from the site itself", () => {
+    expect(photoUrl("https://x.supabase.co", "samples/tuekdaeng/1-front.webp")).toBe("/samples/tuekdaeng/1-front.webp");
+  });
+
   it("encodes each path segment but keeps the slashes", () => {
     expect(photoUrl("https://x.supabase.co", "a b/ฟ.webp")).toBe(
       "https://x.supabase.co/storage/v1/object/public/product-photos/a%20b/%E0%B8%9F.webp",
