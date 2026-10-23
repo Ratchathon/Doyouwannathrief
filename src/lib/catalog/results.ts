@@ -2,7 +2,7 @@ import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 import type { ResultItem, ResultShop } from "@/components/results-view";
 import { PAGE_SIZE, type ItemSearchArgs } from "@/lib/search/params";
-import { pageHref, photoUrl, type RelatedShopArgs } from "@/lib/search/results";
+import { pageHref, photoUrl, type FacetArgs, type RelatedShopArgs } from "@/lib/search/results";
 import { supabaseEnv } from "@/lib/supabase/env";
 import { createPublicClient } from "@/lib/supabase/public";
 
@@ -48,16 +48,19 @@ export function pageLinks(path: string, params: URLSearchParams, hasMore: boolea
 export async function getResults(
   items: ItemSearchArgs,
   shops: RelatedShopArgs,
+  facets: FacetArgs,
   styleNames: [string, string][],
-): Promise<{ items: ResultItem[]; shops: ResultShop[]; hasMore: boolean }> {
+): Promise<{ items: ResultItem[]; shops: ResultShop[]; hasMore: boolean; sizes: string[] }> {
   "use cache";
   cacheLife("minutes");
   cacheTag("products", "shops");
   const supabase = createPublicClient();
-  const [itemRes, shopRes] = await Promise.all([
+  const [itemRes, shopRes, facetRes] = await Promise.all([
     supabase.rpc("search_products", items),
     supabase.rpc("search_related_shops", shops),
+    supabase.rpc("search_facets", facets),
   ]);
+  const sizeRows = (facetRes.error ? null : (facetRes.data as { size_label: string }[] | null)) ?? [];
   const itemRows = (itemRes.error ? null : (itemRes.data as ItemRow[] | null)) ?? [];
   const shopRows = (shopRes.error ? null : (shopRes.data as ShopRow[] | null)) ?? [];
   const { url } = supabaseEnv();
@@ -66,5 +69,6 @@ export async function getResults(
     items: itemRows.slice(0, PAGE_SIZE).map((row) => toResultItem(row, url)),
     shops: shopRows.map((row) => toResultShop(row, names)),
     hasMore: itemRows.length > PAGE_SIZE,
+    sizes: sizeRows.map((r) => r.size_label),
   };
 }

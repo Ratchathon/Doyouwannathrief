@@ -1,3 +1,4 @@
+import { FilterBar } from "@/components/filter-bar";
 import { ResultsView } from "@/components/results-view";
 import { SearchBox } from "@/components/search-box";
 import { GridSkeleton } from "@/components/skeleton";
@@ -39,6 +40,7 @@ export async function ResultsPage({
   const results = await getResults(
     args.items,
     args.shops,
+    args.facets,
     styles.map((s) => [s.slug, s.name_en]),
   );
   return (
@@ -53,6 +55,7 @@ export async function ResultsPage({
           />
         ) : undefined
       }
+      filters={<FilterBar path={path} params={params.toString()} scope={scope.kind} sizes={results.sizes} />}
       title={typeof title === "function" ? title(args.items.p_query) : title}
       description={description}
       path={path}

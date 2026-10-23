@@ -97,4 +97,9 @@ describe("ResultsView", () => {
     expect(screen.getByRole("link", { name: "DISCOVER" , hidden: false })).toHaveAttribute("href", "/discover");
     expect(within(screen.getByRole("region", { name: "SHOPS" })).getByText(/ไม่มีร้านที่ตรง/)).toBeInTheDocument();
   });
+
+  it("shows the filter controls in the items toolbar", () => {
+    render(<ResultsView {...base} filters={<div role="group" aria-label="ตัวกรอง" />} />);
+    expect(within(screen.getByRole("region", { name: "ITEMS" })).getByRole("group", { name: "ตัวกรอง" })).toBeInTheDocument();
+  });
 });

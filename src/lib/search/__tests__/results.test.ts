@@ -36,7 +36,16 @@ describe("resultsArgs", () => {
   it("searches by the typed words, fetching one extra item to know if there are more", () => {
     const args = resultsArgs({ kind: "search" }, params("q=polo&sort=price_asc&page=2"));
     expect(args.items).toMatchObject({ p_query: "polo", p_sort: "price_asc", p_limit: PAGE_SIZE + 1, p_offset: PAGE_SIZE });
-    expect(args.shops).toEqual({ p_query: "polo", p_style: null, p_category: null, p_province: null, p_limit: 20 });
+    expect(args.shops).toEqual({
+      p_query: "polo",
+      p_style: null,
+      p_category: null,
+      p_province: null,
+      p_limit: 20,
+      p_min_satang: null,
+      p_max_satang: null,
+      p_size: null,
+    });
   });
 
   it("fixes the style from the route, ignoring a style in the URL", () => {
@@ -53,6 +62,21 @@ describe("resultsArgs", () => {
 
   it("lets the search page narrow by category from the URL", () => {
     expect(resultsArgs({ kind: "search" }, params("q=polo&category=tees")).items.p_category).toBe("tees");
+  });
+});
+
+describe("resultsArgs filters", () => {
+  it("passes price and size to the shop counts and leaves size out of the size list", () => {
+    const args = resultsArgs({ kind: "search" }, params("q=jeans&min=500&max=1000&size=32"));
+    expect(args.shops).toMatchObject({ p_min_satang: 50000, p_max_satang: 100000, p_size: "32" });
+    expect(args.facets).toEqual({
+      p_query: "jeans",
+      p_category: null,
+      p_style: null,
+      p_province: null,
+      p_min_satang: 50000,
+      p_max_satang: 100000,
+    });
   });
 });
 

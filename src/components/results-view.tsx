@@ -26,6 +26,8 @@ export type ResultItem = {
 export type ResultsViewProps = {
   /** Optional search box shown above the title. */
   search?: React.ReactNode;
+  /** Optional filter controls shown in the items toolbar. */
+  filters?: React.ReactNode;
   title: string;
   description?: string;
   /** Page path the sort form submits to, e.g. /search or /styles/vintage. */
@@ -104,6 +106,7 @@ export function ResultsView(props: ResultsViewProps) {
                 {props.nextHref ? "+" : ""}
               </span>
             </h2>
+            {props.filters}
             <SortForm {...props} />
           </div>
 

@@ -13,7 +13,16 @@ export type RelatedShopArgs = {
   p_category: Category | null;
   p_province: string | null;
   p_limit: number;
+  p_min_satang: number | null;
+  p_max_satang: number | null;
+  p_size: string | null;
 };
+
+/** Arguments for listing the sizes present in the results (the size filter itself is left out). */
+export type FacetArgs = Pick<
+  ItemSearchArgs,
+  "p_query" | "p_category" | "p_style" | "p_province" | "p_min_satang" | "p_max_satang"
+>;
 
 const baht = new Intl.NumberFormat("en-US");
 
@@ -31,12 +40,15 @@ export function photoUrl(supabaseUrl: string, path: string): string {
 }
 
 /** Database arguments for a results page. Asks for one extra item to tell whether a next page exists. */
-export function resultsArgs(scope: ResultsScope, params: URLSearchParams): { items: ItemSearchArgs; shops: RelatedShopArgs } {
+export function resultsArgs(
+  scope: ResultsScope,
+  params: URLSearchParams,
+): { items: ItemSearchArgs; shops: RelatedShopArgs; facets: FacetArgs } {
   const parsed = parseItemSearch(params);
   const items: ItemSearchArgs = {
     ...parsed,
     p_style: scope.kind === "style" ? scope.slug : scope.kind === "search" ? parsed.p_style : null,
-    p_category: scope.kind === "category" ? scope.category : scope.kind === "search" ? parsed.p_category : null,
+    p_category: scope.kind === "category" ? scope.category : parsed.p_category,
     p_limit: PAGE_SIZE + 1,
   };
   return {
@@ -47,6 +59,17 @@ export function resultsArgs(scope: ResultsScope, params: URLSearchParams): { ite
       p_category: items.p_category,
       p_province: items.p_province,
       p_limit: RELATED_SHOP_LIMIT,
+      p_min_satang: items.p_min_satang,
+      p_max_satang: items.p_max_satang,
+      p_size: items.p_size,
+    },
+    facets: {
+      p_query: items.p_query,
+      p_category: items.p_category,
+      p_style: items.p_style,
+      p_province: items.p_province,
+      p_min_satang: items.p_min_satang,
+      p_max_satang: items.p_max_satang,
     },
   };
 }
