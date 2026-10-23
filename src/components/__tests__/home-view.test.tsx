@@ -23,8 +23,16 @@ describe("HomeView", () => {
   it("links each style pillar to its style page", () => {
     render(<HomeView styles={styles} shops={shops} />);
     const pillars = screen.getByRole("navigation", { name: "Shop by style" });
-    expect(within(pillars).getByRole("link", { name: "STREETWEAR" })).toHaveAttribute("href", "/styles/streetwear");
-    expect(within(pillars).getByRole("link", { name: "VINTAGE" })).toHaveAttribute("href", "/styles/vintage");
+    expect(within(pillars).getByRole("link", { name: /STREETWEAR/ })).toHaveAttribute("href", "/styles/streetwear");
+    expect(within(pillars).getByRole("link", { name: /VINTAGE/ })).toHaveAttribute("href", "/styles/vintage");
+  });
+
+  it("numbers each style and shows its Thai name for the phone tiles", () => {
+    render(<HomeView styles={[{ slug: "vintage", name_en: "Vintage", name_th: "วินเทจ" }]} shops={shops} />);
+    const nav = screen.getByRole("navigation", { name: "Shop by style" });
+    const link = within(nav).getByRole("link", { name: /VINTAGE/ });
+    expect(link).toHaveTextContent("01");
+    expect(link).toHaveTextContent("วินเทจ");
   });
 
   it("searches with a GET form to /search using q", () => {

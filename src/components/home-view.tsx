@@ -27,20 +27,28 @@ export function HomeView({ styles, shops }: { styles: NavStyle[]; shops: HomeSho
       </section>
 
       <nav aria-label="Shop by style" className="px-4 pt-10 pb-14 md:px-10 md:pt-12 md:pb-18">
-        <ul className="mx-auto grid max-w-[1200px] grid-cols-3 items-end gap-x-3 gap-y-8 md:grid-cols-[repeat(auto-fit,minmax(140px,1fr))] md:gap-5">
+        {/* Phone: numbered tiles in two columns. Desktop: a skyline of chrome pillars. */}
+        <ul className="mx-auto grid max-w-[1200px] grid-cols-2 gap-2.5 md:grid-cols-[repeat(auto-fit,minmax(140px,1fr))] md:items-end md:gap-5">
           {styles.map((style, i) => (
             <li key={style.slug}>
               <Link
                 href={`/styles/${style.slug}`}
-                className="group flex flex-col gap-3.5 text-fg"
+                className="group flex h-[150px] flex-col justify-between border border-line bg-[linear-gradient(160deg,#17191c_0%,#0e0f11_100%)] p-3.5 text-fg active:bg-[#17191c] md:h-auto md:justify-start md:gap-3.5 md:border-0 md:bg-none md:p-0"
                 style={{ "--h": `${PILLAR_HEIGHTS[i % PILLAR_HEIGHTS.length]}px` } as React.CSSProperties}
               >
-                <span
-                  aria-hidden="true"
-                  className="slab h-[calc(var(--h)*0.42)] group-hover:-translate-y-1.5 md:h-(--h)"
-                />
-                <span className="text-center font-display text-[15px] leading-tight tracking-[0.04em] md:text-xl">
-                  {style.name_en.toUpperCase()}
+                <span className="font-label text-[11px] font-bold tracking-[0.16em] text-faint md:hidden">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <span aria-hidden="true" className="slab hidden group-hover:-translate-y-1.5 md:block md:h-(--h)" />
+                <span className="flex flex-col md:items-center">
+                  <span
+                    className={`font-display leading-none tracking-[0.01em] md:text-center md:text-xl md:leading-tight md:tracking-[0.04em] ${
+                      style.name_en.length > 10 ? "text-xl" : "text-[30px]"
+                    }`}
+                  >
+                    {style.name_en.toUpperCase()}
+                  </span>
+                  {style.name_th && style.name_th.toLowerCase() !== style.name_en.toLowerCase() && <span className="mt-1 text-xs text-muted md:hidden">{style.name_th}</span>}
                 </span>
               </Link>
             </li>
