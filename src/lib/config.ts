@@ -1,2 +1,2 @@
-// Working name until the brand is decided. Change it here only.
-export const APP_NAME = "Curated Hub";
+export const APP_NAME = "doyouwannathrift";
+export const WORDMARK = "DOYOUWANNATHRIFT";
