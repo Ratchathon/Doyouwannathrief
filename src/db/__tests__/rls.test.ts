@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { beforeEach, describe, expect, it } from "vitest";
 import type { PGlite } from "@electric-sql/pglite";
-import { actAs, actAsSystem, createTestDb, createUser, expectBlockedByPolicy } from "@/test/db";
+import { actAs, actAsSystem, createProduct, createTestDb, createUser, expectBlockedByPolicy } from "@/test/db";
 
 let db: PGlite;
 let ownerId: string;
@@ -20,14 +20,8 @@ async function seedShop(owner: string, slug: string, status: "pending" | "approv
   return res.rows[0].id;
 }
 
-async function seedProduct(shopId: string, status: string, title = "เสื้อ") {
-  const res = await db.query<{ id: string }>(
-    `insert into products (shop_id, title, category, size_label, price_satang, condition, has_flaws, status, sold_at)
-     values ($1, $2, 'tops', 'M', 50000, 'good', false, $3::product_status, case when $3::text = 'sold' then now() end) returning id`,
-    [shopId, title, status],
-  );
-  return res.rows[0].id;
-}
+const seedProduct = (shopId: string, status: "draft" | "active" | "reserved" | "sold", title = "เสื้อ") =>
+  createProduct(db, shopId, status, title);
 
 async function count(sql: string, params: unknown[] = []) {
   const res = await db.query<{ n: number }>(`select count(*)::int as n from (${sql}) t`, params);
@@ -228,13 +222,11 @@ describe("products", () => {
 
 describe("product images", () => {
   it("follow the visibility of their product", async () => {
-    const live = await seedProduct(approvedShopId, "active");
+    const live = await seedProduct(approvedShopId, "active"); // comes with its required photos
     const draft = await seedProduct(approvedShopId, "draft");
-    for (const id of [live, draft]) {
-      await db.query("insert into product_images (product_id, kind, storage_path) values ($1, 'front', 'x.webp')", [id]);
-    }
+    await db.query("insert into product_images (product_id, kind, storage_path) values ($1, 'front', 'x.webp')", [draft]);
     await actAs(db, "anon");
-    const res = await db.query<{ product_id: string }>("select product_id from product_images");
+    const res = await db.query<{ product_id: string }>("select distinct product_id from product_images");
     expect(res.rows.map((r) => r.product_id)).toEqual([live]);
   });
 

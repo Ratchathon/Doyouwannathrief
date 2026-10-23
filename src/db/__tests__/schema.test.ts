@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { beforeEach, describe, expect, it } from "vitest";
 import type { PGlite } from "@electric-sql/pglite";
-import { createTestDb, createUser, expectRejectedByRule } from "@/test/db";
+import { createProduct, createTestDb, createUser, expectRejectedByRule } from "@/test/db";
 
 let db: PGlite;
 
@@ -167,8 +167,9 @@ describe("products", () => {
 
   it("records when an item was sold", async () => {
     const shop = await insertShop();
-    await expectRejectedByRule(insertProduct(shop.id, { status: "sold" }));
-    await expect(insertProduct(shop.id, { status: "sold", sold_at: new Date().toISOString() })).resolves.toBeDefined();
+    const id = await createProduct(db, shop.id, "active");
+    await expectRejectedByRule(db.query("update products set status = 'sold' where id = $1", [id]));
+    await db.query("update products set status = 'sold', sold_at = now() where id = $1", [id]);
   });
 });
 

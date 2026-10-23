@@ -119,3 +119,36 @@ export async function actAsSystem(db: PGlite): Promise<void> {
   await db.exec("reset role");
   await db.query("select set_config('request.jwt.claim.sub', '', false)");
 }
+
+type ProductStatus = "draft" | "active" | "reserved" | "sold";
+
+/**
+ * Creates an item the way the app does: as a draft, with the required
+ * photos, then moved to `status`. Runs as the system (bypassing RLS).
+ */
+export async function createProduct(
+  db: PGlite,
+  shopId: string,
+  status: ProductStatus = "draft",
+  title = "เสื้อ",
+): Promise<string> {
+  const res = await db.query<{ id: string }>(
+    `insert into products (shop_id, title, category, size_label, price_satang, condition, has_flaws)
+     values ($1, $2, 'tops', 'M', 50000, 'good', false) returning id`,
+    [shopId, title],
+  );
+  const id = res.rows[0].id;
+  if (status === "draft") return id;
+
+  for (const kind of ["front", "back", "label"]) {
+    await db.query("insert into product_images (product_id, kind, storage_path) values ($1, $2, $3)", [
+      id,
+      kind,
+      `${id}/${kind}.webp`,
+    ]);
+  }
+  await db.query("update products set status = 'active' where id = $1", [id]);
+  if (status === "reserved") await db.query("update products set status = 'reserved' where id = $1", [id]);
+  if (status === "sold") await db.query("update products set status = 'sold', sold_at = now() where id = $1", [id]);
+  return id;
+}
