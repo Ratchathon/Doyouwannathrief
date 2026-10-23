@@ -33,7 +33,7 @@ export function ShopDiscRow({
   const list =
     layout === "grid"
       ? "grid grid-cols-3 gap-x-3 gap-y-8 sm:grid-cols-4 md:grid-cols-6"
-      : "-mx-4 flex snap-x snap-mandatory gap-3.5 overflow-x-auto px-4 pb-2 [scrollbar-width:none] md:-mx-10 md:gap-7 md:px-10";
+      : "-mx-4 flex snap-x snap-mandatory scroll-px-4 gap-3.5 overflow-x-auto px-4 pb-2 [scrollbar-width:none] md:-mx-10 md:scroll-px-10 md:gap-7 md:px-10";
   return (
     <ul className={list}>
       {shops.map((shop) => (

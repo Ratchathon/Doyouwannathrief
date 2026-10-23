@@ -51,7 +51,7 @@ function Row({
 
 function Items({ items, badge }: { items: ResultItem[]; badge?: (item: ResultItem) => string }) {
   return (
-    <ul className="-mx-4 flex snap-x gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:none] md:-mx-10 md:gap-5 md:px-10">
+    <ul className="-mx-4 flex snap-x scroll-px-4 gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:none] md:-mx-10 md:scroll-px-10 md:gap-5 md:px-10">
       {items.map((item) => (
         <li key={item.id} className="w-[150px] shrink-0 snap-start md:w-[230px]">
           <ItemCard item={item} badge={badge?.(item)} />

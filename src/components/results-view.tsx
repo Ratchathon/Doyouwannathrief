@@ -66,7 +66,7 @@ export function ResultsView(props: ResultsViewProps) {
           {shops.length === 0 ? (
             <p className="px-4 pb-5 text-muted md:px-6">ไม่มีร้านที่ตรงกับคำค้นนี้</p>
           ) : (
-            <ul className="flex snap-x gap-3 overflow-x-auto px-4 pb-4 md:flex-col md:gap-0 md:overflow-visible md:px-0 md:pb-0">
+            <ul className="flex snap-x scroll-px-4 gap-3 overflow-x-auto px-4 pb-4 md:flex-col md:gap-0 md:overflow-visible md:px-0 md:pb-0">
               {shops.map((shop) => (
                 <li key={shop.slug} className="w-[72%] max-w-[300px] shrink-0 snap-start md:w-auto md:max-w-none">
                   <Link
