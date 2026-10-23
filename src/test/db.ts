@@ -1,10 +1,11 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { PGlite } from "@electric-sql/pglite";
+import { fuzzystrmatch } from "@electric-sql/pglite/contrib/fuzzystrmatch";
 import { pg_trgm } from "@electric-sql/pglite/contrib/pg_trgm";
 
 // Postgres extensions Supabase provides that our migrations use.
-const EXTENSIONS = { pg_trgm };
+const EXTENSIONS = { pg_trgm, fuzzystrmatch };
 
 const MIGRATIONS_DIR = join(process.cwd(), "supabase", "migrations");
 
