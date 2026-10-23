@@ -16,6 +16,8 @@ describe("parseItemSearch", () => {
       p_sort: "newest",
       p_limit: PAGE_SIZE,
       p_offset: 0,
+      p_categories: null,
+      p_sizes: null,
     });
   });
 
@@ -25,20 +27,33 @@ describe("parseItemSearch", () => {
     );
     expect(args).toEqual({
       p_query: "levi เดนิม",
-      p_category: "tops_shirts",
+      p_category: null,
       p_style: "vintage",
       p_province: "เชียงใหม่",
       p_min_satang: 50000,
       p_max_satang: 150000,
-      p_size: "M",
+      p_size: null,
       p_sort: "price_asc",
       p_limit: PAGE_SIZE,
       p_offset: PAGE_SIZE * 2,
+      p_categories: ["tops_shirts"],
+      p_sizes: ["M"],
     });
   });
 
+  it("reads several categories and sizes separated by commas, dropping junk and repeats", () => {
+    const args = parseItemSearch(params("category=tees,spaceships,sweats,tees&size=M, L ,,m,XL"));
+    expect(args.p_categories).toEqual(["tees", "sweats"]);
+    expect(args.p_sizes).toEqual(["M", "L", "XL"]);
+  });
+
+  it("caps how many values one filter can hold", () => {
+    const many = Array.from({ length: 40 }, (_, i) => `S${i}`).join(",");
+    expect(parseItemSearch(params(`size=${many}`)).p_sizes).toHaveLength(12);
+  });
+
   it.each([
-    ["category=spaceships", "p_category"],
+    ["category=spaceships", "p_categories"],
     ["style=Vintage!", "p_style"],
     ["province=Atlantis", "p_province"],
     ["min=cheap", "p_min_satang"],

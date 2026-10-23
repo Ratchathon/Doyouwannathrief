@@ -136,3 +136,37 @@ describe("search_related_shops with price and size", () => {
     expect(res.rows[0].s.shops.map((x) => x.slug)).toEqual(["thrifthouse"]);
   });
 });
+
+describe("several values in one filter", () => {
+  it("matches any of the chosen sizes and categories, in items, shop counts and size lists", async () => {
+    await item("ยีนส์ 30", "30", 50000);
+    await item("ยีนส์ 32", "32", 50000);
+    await item("ยีนส์ 34", "34", 50000);
+    await item("เสื้อ M", "M", 30000, { category: "tees" });
+    await item("ฮู้ด L", "L", 30000, { category: "sweats" });
+    await actAs(db, "anon");
+    const sized = await db.query<{ title: string }>(
+      "select title from public.search_products(p_sizes => array['30','34']) order by title",
+    );
+    expect(sized.rows.map((r) => r.title)).toEqual(["ยีนส์ 30", "ยีนส์ 34"]);
+    const cats = await db.query<{ title: string }>(
+      "select title from public.search_products(p_categories => array['tees','sweats']::product_category[]) order by title",
+    );
+    expect(cats.rows.map((r) => r.title)).toEqual(["ฮู้ด L", "เสื้อ M"]);
+    const shops = await db.query<{ match_count: number }>(
+      "select match_count from public.search_related_shops(p_sizes => array['30','32'])",
+    );
+    expect(shops.rows[0].match_count).toBe(2);
+    const facets = await db.query<{ size_label: string }>(
+      "select size_label from public.search_facets(p_categories => array['tees','sweats']::product_category[]) order by size_label",
+    );
+    expect(facets.rows.map((r) => r.size_label)).toEqual(["L", "M"]);
+  });
+
+  it("matches sizes regardless of letter case", async () => {
+    await item("ยีนส์ฟรีไซซ์", "Free", 50000);
+    await actAs(db, "anon");
+    const res = await db.query("select title from public.search_products(p_sizes => array['FREE'])");
+    expect(res.rows).toHaveLength(1);
+  });
+});

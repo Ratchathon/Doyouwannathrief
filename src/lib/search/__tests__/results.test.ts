@@ -45,6 +45,8 @@ describe("resultsArgs", () => {
       p_min_satang: null,
       p_max_satang: null,
       p_size: null,
+      p_categories: null,
+      p_sizes: null,
     });
   });
 
@@ -61,14 +63,19 @@ describe("resultsArgs", () => {
   });
 
   it("lets the search page narrow by category from the URL", () => {
-    expect(resultsArgs({ kind: "search" }, params("q=polo&category=tees")).items.p_category).toBe("tees");
+    expect(resultsArgs({ kind: "search" }, params("q=polo&category=tees,sweats")).items.p_categories).toEqual(["tees", "sweats"]);
+  });
+
+  it("ignores URL categories on a category page", () => {
+    const args = resultsArgs({ kind: "category", category: "denim" }, params("category=tees"));
+    expect(args.items).toMatchObject({ p_category: "denim", p_categories: null });
   });
 });
 
 describe("resultsArgs filters", () => {
   it("passes price and size to the shop counts and leaves size out of the size list", () => {
-    const args = resultsArgs({ kind: "search" }, params("q=jeans&min=500&max=1000&size=32"));
-    expect(args.shops).toMatchObject({ p_min_satang: 50000, p_max_satang: 100000, p_size: "32" });
+    const args = resultsArgs({ kind: "search" }, params("q=jeans&min=500&max=1000&size=32,34&category=denim"));
+    expect(args.shops).toMatchObject({ p_min_satang: 50000, p_max_satang: 100000, p_sizes: ["32", "34"], p_categories: ["denim"] });
     expect(args.facets).toEqual({
       p_query: "jeans",
       p_category: null,
@@ -76,6 +83,7 @@ describe("resultsArgs filters", () => {
       p_province: null,
       p_min_satang: 50000,
       p_max_satang: 100000,
+      p_categories: ["denim"],
     });
   });
 });

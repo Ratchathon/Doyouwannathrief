@@ -1,5 +1,6 @@
 import { CATEGORIES, type Category } from "@/lib/products/listing";
 import { isProvince } from "@/lib/shops/provinces";
+import { listParam } from "@/lib/search/params";
 import type { ResultsScope } from "@/lib/search/results";
 
 /** Quick price ranges in baht (null = open-ended). */
@@ -53,13 +54,17 @@ export type ActiveFilter = { key: string; label: string; removeHref: string };
 /** Filters currently applied, each with a link that removes it. A category page's own category is fixed. */
 export function activeFilters(path: string, params: URLSearchParams, scope: ResultsScope["kind"]): ActiveFilter[] {
   const out: ActiveFilter[] = [];
-  const category = params.get("category") ?? "";
-  if (scope !== "category" && Object.hasOwn(CATEGORIES, category)) {
-    out.push({ key: "category", label: CATEGORIES[category as Category].en, removeHref: filterHref(path, params, { category: null }) });
+  const categories = listParam(params, "category").filter((c): c is Category => Object.hasOwn(CATEGORIES, c));
+  if (scope !== "category") {
+    for (const c of categories) {
+      const rest = categories.filter((x) => x !== c).join(",");
+      out.push({ key: `category:${c}`, label: CATEGORIES[c].en, removeHref: filterHref(path, params, { category: rest || null }) });
+    }
   }
-  const size = (params.get("size") ?? "").trim();
-  if (size && size.length <= 20) {
-    out.push({ key: "size", label: `SIZE ${size}`, removeHref: filterHref(path, params, { size: null }) });
+  const sizes = listParam(params, "size").filter((x) => x.length <= 20);
+  for (const size of sizes) {
+    const rest = sizes.filter((x) => x !== size).join(",");
+    out.push({ key: `size:${size}`, label: `SIZE ${size}`, removeHref: filterHref(path, params, { size: rest || null }) });
   }
   const price = priceLabel(readBaht(params.get("min")), readBaht(params.get("max")));
   if (price) out.push({ key: "price", label: price, removeHref: filterHref(path, params, { min: null, max: null }) });

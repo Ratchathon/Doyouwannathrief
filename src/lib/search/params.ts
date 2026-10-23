@@ -20,6 +20,10 @@ export type ItemSearchArgs = {
   p_sort: ItemSort;
   p_limit: number;
   p_offset: number;
+  /** Any of these categories (from the URL, comma separated). */
+  p_categories: Category[] | null;
+  /** Any of these sizes, compared without regard to case. */
+  p_sizes: string[] | null;
 };
 
 export type ShopSearchArgs = Pick<ItemSearchArgs, "p_query" | "p_style" | "p_province" | "p_limit" | "p_offset">;
@@ -46,11 +50,30 @@ function offset(params: URLSearchParams): number {
   return (clamped - 1) * PAGE_SIZE;
 }
 
+const MAX_VALUES = 12;
+
+/** Comma-separated values, trimmed, without repeats (case-insensitive). */
+export function listParam(params: URLSearchParams, key: string): string[] {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const raw of (params.get(key) ?? "").split(",")) {
+    const value = raw.trim();
+    if (!value || seen.has(value.toLowerCase())) continue;
+    seen.add(value.toLowerCase());
+    out.push(value);
+  }
+  return out;
+}
+
 /** Reads Discover's item filters from the URL. Anything invalid falls back to its default. */
 export function parseItemSearch(params: URLSearchParams): ItemSearchArgs {
-  const category = params.get("category") ?? "";
   const sort = params.get("sort") ?? "";
-  const size = (params.get("size") ?? "").trim();
+  const categories = listParam(params, "category")
+    .filter((c): c is Category => Object.hasOwn(CATEGORIES, c))
+    .slice(0, MAX_VALUES);
+  const sizes = listParam(params, "size")
+    .filter((s) => s.length <= SIZE_MAX)
+    .slice(0, MAX_VALUES);
 
   let min = parseBaht(params.get("min") ?? "");
   let max = parseBaht(params.get("max") ?? "");
@@ -58,15 +81,17 @@ export function parseItemSearch(params: URLSearchParams): ItemSearchArgs {
 
   return {
     p_query: query(params),
-    p_category: Object.hasOwn(CATEGORIES, category) ? (category as Category) : null,
+    p_category: null,
     p_style: style(params),
     p_province: province(params),
     p_min_satang: min,
     p_max_satang: max,
-    p_size: size && size.length <= SIZE_MAX ? size : null,
+    p_size: null,
     p_sort: SORTS.has(sort) ? (sort as ItemSort) : "newest",
     p_limit: PAGE_SIZE,
     p_offset: offset(params),
+    p_categories: categories.length > 0 ? categories : null,
+    p_sizes: sizes.length > 0 ? sizes : null,
   };
 }
 

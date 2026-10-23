@@ -48,6 +48,13 @@ describe("activeFilters", () => {
     );
   });
 
+  it("gives each chosen value its own chip that removes just that value", () => {
+    const filters = activeFilters("/search", p("q=jeans&category=denim,tees&size=32,34"), "search");
+    expect(filters.map((f) => f.label)).toEqual(["DENIM", "TEES", "SIZE 32", "SIZE 34"]);
+    expect(filters[1].removeHref).toBe("/search?q=jeans&category=denim&size=32%2C34");
+    expect(filters[3].removeHref).toBe("/search?q=jeans&category=denim%2Ctees&size=32");
+  });
+
   it("does not offer to remove the category a category page is about", () => {
     expect(activeFilters("/categories/denim", p("category=denim&size=32"), "category").map((f) => f.label)).toEqual(["SIZE 32"]);
   });

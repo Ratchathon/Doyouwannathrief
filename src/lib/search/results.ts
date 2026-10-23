@@ -16,12 +16,14 @@ export type RelatedShopArgs = {
   p_min_satang: number | null;
   p_max_satang: number | null;
   p_size: string | null;
+  p_categories: Category[] | null;
+  p_sizes: string[] | null;
 };
 
 /** Arguments for listing the sizes present in the results (the size filter itself is left out). */
 export type FacetArgs = Pick<
   ItemSearchArgs,
-  "p_query" | "p_category" | "p_style" | "p_province" | "p_min_satang" | "p_max_satang"
+  "p_query" | "p_category" | "p_style" | "p_province" | "p_min_satang" | "p_max_satang" | "p_categories"
 >;
 
 const baht = new Intl.NumberFormat("en-US");
@@ -48,7 +50,8 @@ export function resultsArgs(
   const items: ItemSearchArgs = {
     ...parsed,
     p_style: scope.kind === "style" ? scope.slug : scope.kind === "search" ? parsed.p_style : null,
-    p_category: scope.kind === "category" ? scope.category : parsed.p_category,
+    p_category: scope.kind === "category" ? scope.category : null,
+    p_categories: scope.kind === "category" ? null : parsed.p_categories,
     p_limit: PAGE_SIZE + 1,
   };
   return {
@@ -62,6 +65,8 @@ export function resultsArgs(
       p_min_satang: items.p_min_satang,
       p_max_satang: items.p_max_satang,
       p_size: items.p_size,
+      p_categories: items.p_categories,
+      p_sizes: items.p_sizes,
     },
     facets: {
       p_query: items.p_query,
@@ -70,6 +75,7 @@ export function resultsArgs(
       p_province: items.p_province,
       p_min_satang: items.p_min_satang,
       p_max_satang: items.p_max_satang,
+      p_categories: items.p_categories,
     },
   };
 }
