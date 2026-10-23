@@ -5,7 +5,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import { WORDMARK } from "@/lib/config";
 import { AccountIcon, CloseIcon, MenuIcon, SearchIcon } from "@/components/icons";
 
-export type NavStyle = { slug: string; name_en: string };
+export type NavStyle = { slug: string; name_en: string; name_th?: string };
 export type NavShop = { slug: string; display_name: string; province: string };
 
 type Menu = "styles" | "shops";

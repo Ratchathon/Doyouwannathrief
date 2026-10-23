@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SearchBox } from "@/components/search-box";
 import type { NavStyle } from "@/components/site-header";
 
 export type HomeShop = { slug: string; display_name: string; province: string; style: string | null };
@@ -47,26 +48,9 @@ export function HomeView({ styles, shops }: { styles: NavStyle[]; shops: HomeSho
         </ul>
       </nav>
 
-      <form
-        role="search"
-        action="/search"
-        className="mx-auto mt-2 flex w-full max-w-[680px] items-center gap-2.5 px-4 md:mt-6 md:px-10"
-      >
-        <label htmlFor="home-q" className="sr-only">
-          ค้นหา
-        </label>
-        <input
-          id="home-q"
-          name="q"
-          type="search"
-          enterKeyHint="search"
-          placeholder="ลองค้น polo, ลีวายส์ หรือชื่อร้าน"
-          className="field-line h-[52px] flex-1 text-center text-[17px]"
-        />
-        <button type="submit" className="btn-chrome h-[50px] px-6 md:px-7">
-          SEARCH
-        </button>
-      </form>
+      <div className="mx-auto mt-2 w-full max-w-[680px] px-4 md:mt-6 md:px-10">
+        <SearchBox />
+      </div>
 
       <section aria-labelledby="new-shops" className="mx-auto w-full max-w-[1360px] px-4 pt-24 pb-8 md:px-10 md:pt-32">
         <div className="flex flex-wrap items-baseline justify-between gap-4 border-b border-line pb-4">
@@ -117,7 +101,7 @@ export function HomeView({ styles, shops }: { styles: NavStyle[]; shops: HomeSho
         <p className="mx-auto mt-4 max-w-[520px] text-muted">
           ทุกชิ้นมีรูปหน้า หลัง ป้ายแบรนด์ และตำหนิ เงินถึงร้านเมื่อคุณยืนยันว่าได้ของแล้ว
         </p>
-        <Link href="/how-to" className="btn-chrome mt-8">
+        <Link href="/how-it-works" className="btn-chrome mt-8">
           HOW IT WORKS
         </Link>
       </section>

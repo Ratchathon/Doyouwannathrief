@@ -12,7 +12,7 @@ export async function getNavData(): Promise<{ styles: NavStyle[]; shops: NavShop
   cacheTag("styles", "shops");
   const supabase = createPublicClient();
   const [styles, shops] = await Promise.all([
-    supabase.from("styles").select("slug, name_en").order("position"),
+    supabase.from("styles").select("slug, name_en, name_th").order("position"),
     supabase
       .from("shops")
       .select("slug, display_name, province")

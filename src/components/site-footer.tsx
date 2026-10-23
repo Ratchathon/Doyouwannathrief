@@ -14,18 +14,18 @@ const COLUMNS = [
   {
     title: "CUSTOMER SERVICE",
     links: [
-      ["HOW TO BUY", "/how-to"],
-      ["AUTHENTICITY CHECK", "/how-to#authenticity"],
+      ["HOW TO BUY", "/how-it-works"],
+      ["AUTHENTICITY CHECK", "/how-it-works#authenticity"],
       ["REPORT A PROBLEM", "/report"],
-      ["FAQS", "/how-to#faq"],
+      ["FAQS", "/how-it-works#faq"],
     ],
   },
   {
     title: "SHIPPING",
     links: [
-      ["SHIPPING POLICY", "/how-to#shipping"],
+      ["SHIPPING POLICY", "/how-it-works#shipping"],
       ["ORDER TRACKING", "/account/orders"],
-      ["RETURNS", "/how-to#returns"],
+      ["RETURNS", "/how-it-works#returns"],
     ],
   },
   {

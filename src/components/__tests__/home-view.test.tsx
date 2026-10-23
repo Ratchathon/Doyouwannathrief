@@ -1,6 +1,8 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 import { HomeView } from "@/components/home-view";
+
+vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }));
 
 const styles = [
   { slug: "streetwear", name_en: "Streetwear" },
@@ -52,6 +54,6 @@ describe("HomeView", () => {
 
   it("explains how buying works", () => {
     render(<HomeView styles={styles} shops={shops} />);
-    expect(screen.getByRole("link", { name: "HOW IT WORKS" })).toHaveAttribute("href", "/how-to");
+    expect(screen.getByRole("link", { name: "HOW IT WORKS" })).toHaveAttribute("href", "/how-it-works");
   });
 });
