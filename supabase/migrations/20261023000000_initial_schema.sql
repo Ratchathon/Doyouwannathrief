@@ -69,23 +69,52 @@ create table public.shops (
   bio text not null default '',
   status public.shop_status not null default 'pending',
   rejection_reason text,
-  commission_rate numeric(5, 4) not null default 0.10 check (commission_rate between 0 and 1),
-  promo_commission_rate numeric(5, 4) check (promo_commission_rate between 0 and 1),
-  promo_ends_at timestamptz,
   approved_at timestamptz,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
 
   constraint rejected_needs_reason
-    check (status <> 'rejected' or nullif(trim(rejection_reason), '') is not null),
-  constraint promo_rate_and_end_together
-    check ((promo_commission_rate is null) = (promo_ends_at is null))
+    check (status <> 'rejected' or nullif(trim(rejection_reason), '') is not null)
 );
 
 create index shops_status_idx on public.shops (status);
 
 create trigger shops_touch_updated_at
   before update on public.shops
+  for each row execute function public.touch_updated_at();
+
+-- ---------------------------------------------------------------------------
+-- Shop terms: the business deal between the platform and a shop. Kept in its
+-- own table so it can be private while the shop profile stays public.
+-- The rate in force is snapshotted onto each order (phase 2).
+-- ---------------------------------------------------------------------------
+
+create table public.shop_terms (
+  shop_id uuid primary key references public.shops (id) on delete cascade,
+  -- Standard rate is a placeholder until the founder sets pricing.
+  commission_rate numeric(5, 4) not null default 0.10 check (commission_rate between 0 and 1),
+  promo_commission_rate numeric(5, 4) check (promo_commission_rate between 0 and 1),
+  promo_ends_at timestamptz,
+  updated_at timestamptz not null default now(),
+
+  constraint promo_rate_and_end_together
+    check ((promo_commission_rate is null) = (promo_ends_at is null))
+);
+
+create function public.create_shop_terms() returns trigger
+language plpgsql security definer set search_path = '' as $$
+begin
+  insert into public.shop_terms (shop_id) values (new.id);
+  return new;
+end;
+$$;
+
+create trigger shops_create_terms
+  after insert on public.shops
+  for each row execute function public.create_shop_terms();
+
+create trigger shop_terms_touch_updated_at
+  before update on public.shop_terms
   for each row execute function public.touch_updated_at();
 
 -- ---------------------------------------------------------------------------

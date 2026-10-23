@@ -98,18 +98,45 @@ describe("shops", () => {
     await expect(insertShop({ status: "rejected", rejection_reason: "สินค้ายังไม่ตรงแนวของเว็บ" })).resolves.toBeDefined();
   });
 
-  it("keeps commission between 0% and 100%", async () => {
-    await expectRejectedByRule(insertShop({ commission_rate: 1.5 }));
-    await expectRejectedByRule(insertShop({ commission_rate: -0.1 }));
-    await expect(insertShop({ commission_rate: 0 })).resolves.toBeDefined();
+});
+
+describe("shop terms (commission)", () => {
+  const setTerms = (shopId: string, values: Record<string, unknown>) => {
+    const cols = Object.keys(values);
+    return db.query(
+      `update shop_terms set ${cols.map((c, i) => `${c} = $${i + 2}`).join(", ")} where shop_id = $1`,
+      [shopId, ...Object.values(values)],
+    );
+  };
+
+  it("are created with the standard rate when a shop applies", async () => {
+    const shop = await insertShop();
+    const res = await db.query<{ commission_rate: string }>(
+      "select commission_rate from shop_terms where shop_id = $1",
+      [shop.id],
+    );
+    expect(res.rows).toEqual([{ commission_rate: "0.1000" }]);
   });
 
-  it("requires promo rate and promo end date together", async () => {
-    await expectRejectedByRule(insertShop({ promo_commission_rate: 0 }));
-    await expectRejectedByRule(insertShop({ promo_ends_at: "2027-01-31T23:59:59+07:00" }));
-    await expect(
-      insertShop({ promo_commission_rate: 0, promo_ends_at: "2027-01-31T23:59:59+07:00" }),
-    ).resolves.toBeDefined();
+  it("keep commission between 0% and 100%", async () => {
+    const shop = await insertShop();
+    await expectRejectedByRule(setTerms(shop.id, { commission_rate: 1.5 }));
+    await expectRejectedByRule(setTerms(shop.id, { commission_rate: -0.1 }));
+    await setTerms(shop.id, { commission_rate: 0 });
+  });
+
+  it("require promo rate and promo end date together", async () => {
+    const shop = await insertShop();
+    await expectRejectedByRule(setTerms(shop.id, { promo_commission_rate: 0 }));
+    await expectRejectedByRule(setTerms(shop.id, { promo_ends_at: "2027-01-31T23:59:59+07:00" }));
+    await setTerms(shop.id, { promo_commission_rate: 0, promo_ends_at: "2027-01-31T23:59:59+07:00" });
+  });
+
+  it("are removed with their shop", async () => {
+    const shop = await insertShop();
+    await db.query("delete from shops where id = $1", [shop.id]);
+    const res = await db.query("select count(*)::int as n from shop_terms");
+    expect(res.rows[0]).toEqual({ n: 0 });
   });
 });
 
