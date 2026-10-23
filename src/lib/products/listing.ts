@@ -178,6 +178,14 @@ export function validateListing(input: ListingInput): ListingResult {
   };
 }
 
+export const PHOTO_LABELS: Record<PhotoKind, string> = {
+  front: "ด้านหน้า",
+  back: "ด้านหลัง",
+  label: "ป้ายแบรนด์/ป้ายคอ",
+  flaw: "ตำหนิ",
+  extra: "เพิ่มเติม",
+};
+
 const REQUIRED_PHOTOS: PhotoKind[] = ["front", "back", "label"];
 
 /** Photos still needed before an item can go on sale. */
