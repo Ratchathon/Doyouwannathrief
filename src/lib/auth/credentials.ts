@@ -4,6 +4,8 @@ export type AuthError =
   | "password_required"
   | "password_too_short"
   | "password_too_long"
+  | "password_weak"
+  | "password_same"
   | "invalid_credentials"
   | "email_not_confirmed"
   | "user_already_exists"
@@ -44,6 +46,8 @@ const MESSAGES: Record<AuthError, string> = {
   password_required: "ใส่รหัสผ่าน",
   password_too_short: `รหัสผ่านต้องมีอย่างน้อย ${PASSWORD_MIN} ตัวอักษร`,
   password_too_long: "รหัสผ่านยาวเกินไป ลองให้สั้นลง",
+  password_weak: "รหัสผ่านเดาง่ายเกินไป ลองผสมตัวอักษร ตัวเลข และสัญลักษณ์",
+  password_same: "รหัสผ่านใหม่ต้องไม่ซ้ำกับรหัสเดิม",
   invalid_credentials: "อีเมลหรือรหัสผ่านไม่ถูกต้อง",
   email_not_confirmed: "ยืนยันอีเมลก่อน เราส่งลิงก์ไปที่กล่องจดหมายของคุณแล้ว",
   user_already_exists: "อีเมลนี้มีบัญชีอยู่แล้ว เข้าสู่ระบบแทน",
@@ -54,4 +58,27 @@ const MESSAGES: Record<AuthError, string> = {
 
 export function authErrorMessage(error: AuthError): string {
   return MESSAGES[error];
+}
+
+// Supabase auth error codes we explain specifically. Anything else, including
+// codes added in future Supabase versions, falls back to "unknown".
+const SUPABASE_CODES: Record<string, AuthError> = {
+  invalid_credentials: "invalid_credentials",
+  email_not_confirmed: "email_not_confirmed",
+  user_already_exists: "user_already_exists",
+  email_exists: "user_already_exists",
+  over_request_rate_limit: "rate_limited",
+  over_email_send_rate_limit: "rate_limited",
+  otp_expired: "link_expired",
+  flow_state_expired: "link_expired",
+  flow_state_not_found: "link_expired",
+  bad_code_verifier: "link_expired",
+  weak_password: "password_weak",
+  same_password: "password_same",
+  email_address_invalid: "email_invalid",
+};
+
+export function fromSupabaseError(error: { code?: string }): AuthError {
+  const { code } = error;
+  return code && Object.hasOwn(SUPABASE_CODES, code) ? SUPABASE_CODES[code] : "unknown";
 }

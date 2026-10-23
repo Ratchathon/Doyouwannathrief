@@ -26,4 +26,8 @@ describe("requiredAccess", () => {
     expect(requiredAccess("/seller-x")).toBe("public");
     expect(requiredAccess("/administer")).toBe("public");
   });
+
+  it.each(["/constructor", "/toString", "/__proto__"])("treats built-in object keys like %s as ordinary paths", (path) => {
+    expect(requiredAccess(path)).toBe("public");
+  });
 });

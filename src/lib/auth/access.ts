@@ -11,5 +11,5 @@ const SECTIONS: Record<string, Exclude<Access, "public">> = {
 
 export function requiredAccess(pathname: string): Access {
   const firstSegment = pathname.split("/")[1] ?? "";
-  return SECTIONS[firstSegment] ?? "public";
+  return Object.hasOwn(SECTIONS, firstSegment) ? SECTIONS[firstSegment] : "public";
 }

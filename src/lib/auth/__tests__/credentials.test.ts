@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { authErrorMessage, validateEmail, validatePassword } from "@/lib/auth/credentials";
+import { authErrorMessage, fromSupabaseError, validateEmail, validatePassword } from "@/lib/auth/credentials";
 
 describe("validateEmail", () => {
   it("accepts and normalizes a normal address", () => {
@@ -56,5 +56,39 @@ describe("authErrorMessage", () => {
     for (const error of errors) {
       expect(authErrorMessage(error)).toMatch(/[฀-๿]/);
     }
+  });
+});
+
+describe("fromSupabaseError", () => {
+  it.each([
+    ["invalid_credentials", "invalid_credentials"],
+    ["email_not_confirmed", "email_not_confirmed"],
+    ["user_already_exists", "user_already_exists"],
+    ["email_exists", "user_already_exists"],
+    ["over_request_rate_limit", "rate_limited"],
+    ["over_email_send_rate_limit", "rate_limited"],
+    ["otp_expired", "link_expired"],
+    ["flow_state_expired", "link_expired"],
+    ["flow_state_not_found", "link_expired"],
+    ["bad_code_verifier", "link_expired"],
+    ["weak_password", "password_weak"],
+    ["same_password", "password_same"],
+    ["email_address_invalid", "email_invalid"],
+    ["something_new_from_supabase", "unknown"],
+  ])("maps %s to %s", (code, expected) => {
+    expect(fromSupabaseError({ code })).toBe(expected);
+  });
+
+  it("treats a missing code as unknown", () => {
+    expect(fromSupabaseError({})).toBe("unknown");
+  });
+
+  it.each(["constructor", "toString", "__proto__"])("does not read built-in object keys like %s", (code) => {
+    expect(fromSupabaseError({ code })).toBe("unknown");
+  });
+
+  it("has Thai messages for the password errors only Supabase reports", () => {
+    expect(authErrorMessage("password_weak")).toMatch(/[฀-๿]/);
+    expect(authErrorMessage("password_same")).toMatch(/[฀-๿]/);
   });
 });
