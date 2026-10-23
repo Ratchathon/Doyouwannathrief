@@ -46,7 +46,19 @@ Undecided: brand name (working name "Curated Hub"), shop approval criteria in de
 
 ## Brand Commitments
 
-None yet. Working name only.
+- Working name only; no logo or assets yet.
+- The homepage must not lead with product photos: shop photo quality varies. It features shops and styles instead, and links into Discover.
+- Structural reference from the founder: carnivalbkk.com (search up top, menu by category, clean). Borrow structure, not the look.
+- Feel the founder asked for: clean and serious, never boring; streetwear and high-fashion; fun to use.
+
+## Information Architecture (confirmed)
+
+- Home: shops and styles, no product grid up top.
+- Discover: tabs for products, shops, categories, styles, sharing one search box.
+- Search: product title, brand, shop name, style.
+- Styles: admin-defined list; a product has at most 3.
+- Report a problem: about a product, a shop, or the website; logged-in users only; reviewed in an admin queue.
+- How it works: a buyer guide, a shop guide, FAQ.
 
 ## Evidence on Hand
 
