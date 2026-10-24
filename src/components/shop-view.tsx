@@ -17,8 +17,9 @@ function categoryHref(slug: string, params: string, category: Category | null): 
   return query ? `/${slug}?${query}` : `/${slug}`;
 }
 
-const chip =
-  "inline-flex h-10 shrink-0 items-center rounded-full px-4 font-label text-[13px] font-semibold tracking-[0.06em] whitespace-nowrap";
+const chip = "wide inline-flex h-10 shrink-0 items-center border-2 border-print px-3 text-[11px] whitespace-nowrap";
+const chipOn = "bg-print text-white";
+const chipOff = "bg-sheet hover:bg-highlight";
 
 export function ShopView({
   page,
@@ -36,23 +37,21 @@ export function ShopView({
 
   return (
     <div className="flex flex-col">
-      <section className="mx-auto flex w-full max-w-[1360px] flex-wrap items-end justify-between gap-8 px-4 pt-8 pb-10 md:px-10 md:pt-14 md:pb-12">
+      <section className="mx-auto flex w-full max-w-[1360px] flex-wrap items-end justify-between gap-8 px-4 pt-7 pb-10 md:px-10 md:pt-12 md:pb-12">
         <div className="min-w-0 flex-[999_1_560px]">
-          <p className="label-caps tracking-[0.26em]">
-            {shop.styles[0]?.en ? `${shop.styles[0].en} · ` : ""}
+          <h1 className="cond text-[clamp(56px,8.4vw,116px)] leading-[0.88] break-words">{shop.name}</h1>
+          <p className="wide mt-3 border-t-2 border-print pt-2 text-xs">
+            {shop.styles[0]?.en ? `${shop.styles[0].en.toUpperCase()} · ` : ""}
             {shop.province}
           </p>
-          <h1 className="chrome-text mt-3.5 font-display text-[clamp(48px,8vw,120px)] leading-[0.95] font-normal tracking-[0.01em] break-words">
-            {shop.name}
-          </h1>
-          {shop.bio && <p className="mt-5 max-w-[620px] text-[#b4b9bf]">{shop.bio}</p>}
+          {shop.bio && <p className="mt-4 max-w-[620px] text-print-soft">{shop.bio}</p>}
           {shop.styles.length > 0 && (
             <div className="mt-5 flex flex-wrap gap-2">
               {shop.styles.map((s) => (
                 <Link
                   key={s.slug}
                   href={`/styles/${s.slug}`}
-                  className="inline-flex h-9 items-center rounded-full border border-[#3a3e44] px-3.5 font-label text-xs font-semibold tracking-[0.12em] hover:border-muted"
+                  className="wide inline-flex h-9 items-center border-2 border-print bg-sheet px-3 text-[11px] hover:bg-highlight"
                 >
                   {s.en}
                 </Link>
@@ -63,12 +62,12 @@ export function ShopView({
         <div className="flex flex-[1_1_260px] flex-col items-start gap-4">
           <div className="flex gap-8">
             <p className="flex flex-col">
-              <span className="font-display text-[40px] leading-none">{forSale}</span>
-              <span className="label-caps">FOR SALE</span>
+              <span className="cond tabular text-[56px] leading-[0.9] text-magenta">{forSale}</span>
+              <span className="label-wide">FOR SALE</span>
             </p>
             <p className="flex flex-col">
-              <span className="font-display text-[40px] leading-none">{sold}</span>
-              <span className="label-caps">SOLD</span>
+              <span className="cond tabular text-[56px] leading-[0.9]">{sold}</span>
+              <span className="label-wide">SOLD</span>
             </p>
           </div>
           {shop.social.length > 0 && (
@@ -82,7 +81,7 @@ export function ShopView({
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={`${platform} ของร้าน`}
-                    className="chrome inline-flex size-11 items-center justify-center rounded-full"
+                    className="inline-flex size-11 items-center justify-center border-2 border-print bg-sheet hover:bg-highlight"
                   >
                     <Icon />
                   </a>
@@ -90,19 +89,19 @@ export function ShopView({
               })}
             </div>
           )}
-          <Link href={`/report?shop=${shop.slug}`} className="text-sm text-faint underline underline-offset-4 hover:text-fg-soft">
+          <Link href={`/report?shop=${shop.slug}`} className="text-sm text-muted underline underline-offset-4 hover:text-print">
             แจ้งปัญหาร้านนี้
           </Link>
         </div>
       </section>
 
       <section aria-label="สินค้าของร้าน" className="mx-auto w-full max-w-[1360px] px-4 pb-24 md:px-10">
-        <div className="sticky top-0 z-10 flex flex-wrap items-center justify-between gap-3 border-y border-line bg-ink py-3">
+        <div className="sticky top-0 z-10 flex flex-wrap items-center justify-between gap-3 border-y-2 border-print bg-paper py-3">
           <nav aria-label="หมวดสินค้าในร้าน" className="-mx-1 flex min-w-0 flex-1 gap-2 overflow-x-auto px-1 py-1">
             <Link
               href={categoryHref(shop.slug, params, null)}
               aria-current={category === null ? "page" : undefined}
-              className={`${chip} ${category === null ? "chrome" : "border border-[#3a3e44] hover:border-muted"}`}
+              className={`${chip} ${category === null ? chipOn : chipOff}`}
             >
               ALL · {forSale}
             </Link>
@@ -111,7 +110,7 @@ export function ShopView({
                 key={c.value}
                 href={categoryHref(shop.slug, params, c.value)}
                 aria-current={category === c.value ? "page" : undefined}
-                className={`${chip} ${category === c.value ? "chrome" : "border border-[#3a3e44] hover:border-muted"}`}
+                className={`${chip} ${category === c.value ? chipOn : chipOff}`}
               >
                 {c.en} · {c.n}
               </Link>

@@ -1,7 +1,13 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { SiteHeader } from "@/components/site-header";
+
+let pathname = "/search";
+vi.mock("next/navigation", () => ({ usePathname: () => pathname }));
+beforeEach(() => {
+  pathname = "/search";
+});
 
 const styles = [
   { slug: "streetwear", name_en: "Streetwear" },
@@ -14,7 +20,7 @@ const shops = [
 
 function setup() {
   const user = userEvent.setup();
-  render(<SiteHeader styles={styles} shops={shops} />);
+  render(<SiteHeader styles={styles} shops={shops} issue="OCT 2026" />);
   return user;
 }
 
@@ -22,6 +28,13 @@ describe("SiteHeader", () => {
   it("links the wordmark home", () => {
     setup();
     expect(screen.getByRole("link", { name: "DOYOUWANNATHRIFT" })).toHaveAttribute("href", "/");
+  });
+
+  it("leaves the wordmark to the masthead on the homepage and shows the issue line", () => {
+    pathname = "/";
+    setup();
+    expect(screen.queryByRole("link", { name: "DOYOUWANNATHRIFT" })).not.toBeInTheDocument();
+    expect(screen.getByText("OCT 2026")).toBeInTheDocument();
   });
 
   it("opens the STYLES menu with a link to each style page", async () => {
@@ -89,7 +102,7 @@ describe("SiteHeader", () => {
 
   it("still renders when there are no shops yet", async () => {
     const user = userEvent.setup();
-    render(<SiteHeader styles={styles} shops={[]} />);
+    render(<SiteHeader styles={styles} shops={[]} issue="OCT 2026" />);
     await user.click(screen.getByRole("button", { name: "SHOPS" }));
     const menu = screen.getByRole("region", { name: "SHOPS" });
     expect(within(menu).getByText("ยังไม่มีร้าน")).toBeInTheDocument();

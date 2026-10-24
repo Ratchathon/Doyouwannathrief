@@ -1,11 +1,11 @@
 /** Placeholder shapes shown the moment a page is opened, while its data streams in. */
-const block = "animate-pulse bg-[#17191c]";
+const block = "animate-pulse bg-[#e8e8e4]";
 
 export function GridSkeleton({ title }: { title?: string }) {
   return (
     <div aria-busy="true" aria-label="กำลังโหลด" className="mx-auto w-full max-w-[1360px] px-4 pt-6 pb-24 md:px-10">
       {title ? (
-        <h1 className="font-display text-[34px] leading-none font-normal tracking-[0.02em] md:text-[44px]">{title}</h1>
+        <h1 className="cond text-[56px] leading-[0.88] md:text-[80px]">{title}</h1>
       ) : (
         <div className={`${block} h-14 w-2/3 max-w-[520px]`} />
       )}

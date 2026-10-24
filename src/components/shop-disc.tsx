@@ -18,7 +18,7 @@ export function monogram(name: string): string {
   return (words[0][0] + words[1][0]).toUpperCase();
 }
 
-/** Horizontal slider of round chrome badges with the shop name underneath. */
+/** Horizontal slider of round badges with the shop name underneath. */
 export function ShopDiscRow({
   shops,
   size = "md",
@@ -28,7 +28,7 @@ export function ShopDiscRow({
   size?: "md" | "lg";
   layout?: "row" | "grid";
 }) {
-  const disc = size === "lg" ? "size-[92px] md:size-32 text-[31px] md:text-[44px]" : "size-[92px] text-[31px]";
+  const disc = size === "lg" ? "size-[92px] text-[40px] md:size-32 md:text-[56px]" : "size-[92px] text-[40px]";
   const width = layout === "grid" ? "" : size === "lg" ? "w-[108px] md:w-[148px]" : "w-[108px]";
   const list =
     layout === "grid"
@@ -38,22 +38,22 @@ export function ShopDiscRow({
     <ul className={list}>
       {shops.map((shop) => (
         <li key={shop.slug} className={`${width} shrink-0 snap-start`}>
-          <Link href={`/${shop.slug}`} className="group flex flex-col items-center gap-2.5 text-center text-fg">
+          <Link href={`/${shop.slug}`} className="group flex flex-col items-center gap-2.5 text-center text-print">
             <span className="relative">
               <span
                 aria-hidden="true"
-                className={`chrome flex items-center justify-center rounded-full font-display tracking-[0.02em] transition-transform group-hover:-translate-y-1 ${disc}`}
+                className={`cond flex items-center justify-center rounded-full border-2 border-print bg-sheet leading-none transition-transform duration-300 ease-out group-hover:-translate-y-1 group-hover:border-magenta-strong ${disc}`}
               >
                 {monogram(shop.display_name)}
               </span>
               {shop.isNew && (
-                <span className="chrome absolute -top-0.5 -right-1 inline-flex h-5 items-center rounded-full px-1.5 font-label text-[9px] font-bold tracking-[0.12em]">
+                <span className="wide absolute -top-0.5 -right-2 rotate-6 bg-highlight px-1.5 py-0.5 text-[10px] tracking-[0.08em]">
                   NEW
                 </span>
               )}
             </span>
             <span className="flex flex-col items-center">
-              <span className="font-display text-[15px] leading-[1.1] md:text-lg">{shop.display_name}</span>
+              <span className="wide text-xs leading-[1.2] md:text-[13px]">{shop.display_name}</span>
               <span className="mt-0.5 text-xs text-muted">{shop.province}</span>
             </span>
           </Link>

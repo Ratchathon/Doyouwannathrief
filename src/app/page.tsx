@@ -1,8 +1,9 @@
 import { HomeView } from "@/components/home-view";
+import { buildCoverLines, getCover } from "@/lib/catalog/cover";
 import { getHomeShops } from "@/lib/catalog/home";
-import { getNavData } from "@/lib/catalog/nav";
 
 export default async function HomePage() {
-  const [{ styles }, shops] = await Promise.all([getNavData(), getHomeShops()]);
-  return <HomeView styles={styles} shops={shops} />;
+  const [{ styles, cheap }, shops] = await Promise.all([getCover(), getHomeShops()]);
+  const lines = buildCoverLines({ styles, cheap, newShops: shops.filter((s) => s.isNew) });
+  return <HomeView styles={styles} lines={lines} shops={shops} />;
 }

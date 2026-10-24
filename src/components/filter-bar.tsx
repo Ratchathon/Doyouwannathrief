@@ -15,10 +15,9 @@ type Panel = "category" | "size" | "price" | "province";
 /** Choices being made before APPLY. Prices are kept as typed text. */
 type Draft = { categories: string[]; sizes: string[]; min: string; max: string; province: string };
 
-const chip =
-  "inline-flex h-10 cursor-pointer items-center rounded-full px-3.5 font-label text-[13px] font-semibold tracking-[0.06em] whitespace-nowrap";
-const off = "border border-[#3a3e44] text-fg-soft hover:border-muted";
-const on = "chrome";
+const chip = "wide inline-flex h-10 cursor-pointer items-center border-2 border-print px-3 text-[11px] whitespace-nowrap";
+const off = "bg-sheet text-print hover:bg-highlight";
+const on = "bg-print text-white";
 
 function fromParams(params: URLSearchParams): Draft {
   return {
@@ -174,7 +173,7 @@ export function FilterBar({
                 inputMode="numeric"
                 value={draft.min}
                 onChange={(e) => setDraft({ ...draft, min: digits(e.target.value) })}
-                className="field-line h-10 text-base"
+                className="field mt-1 h-11 text-base"
               />
             </label>
             <label className="flex min-w-0 flex-1 flex-col text-xs text-muted">
@@ -183,7 +182,7 @@ export function FilterBar({
                 inputMode="numeric"
                 value={draft.max}
                 onChange={(e) => setDraft({ ...draft, max: digits(e.target.value) })}
-                className="field-line h-10 text-base"
+                className="field mt-1 h-11 text-base"
               />
             </label>
           </div>
@@ -199,7 +198,7 @@ export function FilterBar({
           id={`${id}-province-${sheet ? "s" : "d"}`}
           value={draft.province}
           onChange={(e) => setDraft({ ...draft, province: e.target.value })}
-          className="h-11 w-full rounded-lg border border-[#3a3e44] bg-[#121316] px-3 text-fg-soft"
+          className="h-11 w-full cursor-pointer border-2 border-print bg-sheet px-3 text-print"
         >
           <option value="">ทุกจังหวัด</option>
           {PROVINCES.map((p) => (
@@ -213,7 +212,7 @@ export function FilterBar({
   }
 
   const applyButton = (className = "") => (
-    <button type="button" onClick={apply} className={`btn-chrome ${className}`}>
+    <button type="button" onClick={apply} className={`btn ${className}`}>
       APPLY
     </button>
   );
@@ -233,7 +232,7 @@ export function FilterBar({
               aria-expanded={open === p.key}
               aria-controls={`${id}-${p.key}`}
               onClick={() => openPanel(p.key)}
-              className={`${chip} gap-1.5 ${shown ? "border border-fg text-fg" : off}`}
+              className={`${chip} gap-1.5 ${shown ? "bg-highlight text-print" : off}`}
             >
               {shown ? `${p.label} · ${shown}` : p.label}
               <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true">
@@ -247,15 +246,15 @@ export function FilterBar({
             id={`${id}-${open}`}
             role="region"
             aria-label={panels.find((p) => p.key === open)!.label}
-            className="absolute top-12 left-0 z-30 w-[360px] border border-line bg-ink-raised p-4 shadow-[0_24px_40px_rgba(0,0,0,0.5)]"
+            className="absolute top-12 left-0 z-30 w-[360px] border-2 border-print bg-paper p-4 shadow-[0_18px_30px_rgba(17,17,17,0.14)]"
           >
             {renderChoices(open)}
-            <div className="mt-4 flex justify-end">{applyButton("h-10 px-6 text-[15px]")}</div>
+            <div className="mt-4 flex justify-end">{applyButton("h-11 px-7")}</div>
           </div>
         )}
       </div>
 
-      <button type="button" onClick={openSheet} className={`${chip} chrome md:hidden`}>
+      <button type="button" onClick={openSheet} className={`${chip} ${on} md:hidden`}>
         {active.length > 0 ? `FILTER · ${active.length}` : "FILTER"}
       </button>
 
@@ -267,17 +266,19 @@ export function FilterBar({
                 <Link
                   href={f.removeHref}
                   aria-label={`เอาออก ${f.label}`}
-                  className="chrome inline-flex h-8 items-center gap-1.5 rounded-full px-3 font-label text-xs font-semibold"
+                  className="wide inline-flex h-8 items-center gap-1.5 bg-highlight px-2.5 text-[11px] hover:bg-print hover:text-white"
                 >
                   {f.label}
-                  <span aria-hidden="true">✕</span>
+                  <svg width="9" height="9" viewBox="0 0 10 10" aria-hidden="true">
+                    <path d="M1 1l8 8M9 1L1 9" fill="none" stroke="currentColor" strokeWidth="1.8" />
+                  </svg>
                 </Link>
               </li>
             ))}
           </ul>
           <Link
             href={clearHref(path, params)}
-            className="inline-flex h-8 items-center px-1 font-label text-xs font-semibold text-fg-soft underline underline-offset-4"
+            className="wide inline-flex h-8 items-center px-1 text-[11px] underline underline-offset-4 hover:text-magenta-strong"
           >
             CLEAR ALL
           </Link>
@@ -286,43 +287,43 @@ export function FilterBar({
 
       {sheet && (
         <div className="fixed inset-0 z-50 md:hidden">
-          <div aria-hidden="true" className="absolute inset-0 bg-black/55" onClick={() => setSheet(false)} />
+          <div aria-hidden="true" className="absolute inset-0 bg-print/45" onClick={() => setSheet(false)} />
           <div
             role="dialog"
             aria-modal="true"
             aria-label="ตัวกรอง"
-            className="absolute inset-x-0 bottom-0 flex max-h-[85dvh] flex-col rounded-t-2xl border-t border-line bg-ink-raised"
+            className="absolute inset-x-0 bottom-0 flex max-h-[85dvh] flex-col border-t-2 border-print bg-paper"
           >
             <div className="overflow-y-auto px-4 pt-2.5">
-              <div aria-hidden="true" className="mx-auto mb-2 h-1 w-10 rounded bg-[#3a3e44]" />
+              <div aria-hidden="true" className="mx-auto mb-2 h-1 w-10 bg-print" />
               <div className="flex items-center justify-between">
-                <p className="font-display text-2xl">FILTER</p>
+                <p className="cond text-[40px] leading-none">FILTER</p>
                 <button
                   type="button"
                   aria-label="ปิด"
                   onClick={() => setSheet(false)}
-                  className="inline-flex size-11 items-center justify-center text-fg"
+                  className="inline-flex size-11 items-center justify-center text-print"
                 >
                   <CloseIcon />
                 </button>
               </div>
               {panels.map((p) => (
                 <section key={p.key} className="mt-5 pb-1">
-                  <p className="label-caps mb-2.5">{p.label}</p>
+                  <p className="label-wide mb-2.5 border-b-2 border-print pb-1.5">{p.label}</p>
                   {renderChoices(p.key)}
                 </section>
               ))}
             </div>
             {/* Sticky actions so APPLY is always one tap away. */}
-            <div className="flex gap-2.5 border-t border-line px-4 pt-3 pb-[max(16px,env(safe-area-inset-bottom))]">
+            <div className="flex gap-2.5 border-t-2 border-print px-4 pt-3 pb-[max(16px,env(safe-area-inset-bottom))]">
               <button
                 type="button"
                 onClick={() => setDraft({ categories: [], sizes: [], min: "", max: "", province: "" })}
-                className={`${chip} ${off} h-[50px] flex-1 justify-center font-display text-base`}
+                className="btn-outline h-[52px] flex-1"
               >
                 CLEAR
               </button>
-              {applyButton("h-[50px] flex-[2] text-base")}
+              {applyButton("h-[52px] flex-[2]")}
             </div>
           </div>
         </div>

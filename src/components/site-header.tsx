@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useId, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
+import { Suspense, useEffect, useId, useRef, useState } from "react";
 import { WORDMARK } from "@/lib/config";
 import { AccountIcon, CloseIcon, MenuIcon, SearchIcon } from "@/components/icons";
 
@@ -12,9 +13,27 @@ type Menu = "styles" | "shops";
 
 const MENU_LABEL: Record<Menu, string> = { styles: "STYLES", shops: "SHOPS" };
 
-const navLink = "inline-flex h-11 items-center text-fg-soft hover:text-fg";
+const navLink = "inline-flex h-11 items-center text-print hover:text-magenta-strong";
+const iconLink = "inline-flex size-11 items-center justify-center text-print hover:text-magenta-strong";
 
-export function SiteHeader({ styles, shops }: { styles: NavStyle[]; shops: NavShop[] }) {
+function Wordmark({ onNavigate }: { onNavigate?: () => void }) {
+  return (
+    <Link href="/" onClick={onNavigate} className="cond text-center text-[30px] leading-none text-magenta md:text-[36px]">
+      {WORDMARK}
+    </Link>
+  );
+}
+
+/** The homepage masthead is the wordmark there, so the bar shows the issue line instead. */
+function HeaderCenter({ issue, onNavigate }: { issue: string; onNavigate: () => void }) {
+  return usePathname() === "/" ? (
+    <p className="wide text-[11px] tracking-[0.14em]">{issue}</p>
+  ) : (
+    <Wordmark onNavigate={onNavigate} />
+  );
+}
+
+export function SiteHeader({ styles, shops, issue }: { styles: NavStyle[]; shops: NavShop[]; issue: string }) {
   const [open, setOpen] = useState<Menu | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
@@ -66,10 +85,10 @@ export function SiteHeader({ styles, shops }: { styles: NavStyle[]; shops: NavSh
   };
 
   return (
-    <header ref={headerRef} className="relative z-40 font-display tracking-nav">
-      <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-4 px-4 py-3 md:px-10 md:py-5">
+    <header ref={headerRef} className="relative z-40 bg-paper">
+      <div className="grid h-14 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 border-b-2 border-print px-2 md:h-16 md:px-10">
         {/* Left: desktop nav / mobile menu button */}
-        <nav aria-label="Main" className="hidden flex-wrap items-center gap-7 text-[17px] md:flex">
+        <nav aria-label="Main" className="wide hidden flex-wrap items-center gap-7 text-xs tracking-[0.06em] md:flex">
           <Link href="/discover" className={navLink} onClick={closeAll}>
             DISCOVER
           </Link>
@@ -83,7 +102,7 @@ export function SiteHeader({ styles, shops }: { styles: NavStyle[]; shops: NavSh
               aria-expanded={open === menu}
               aria-controls={`${baseId}-${menu}`}
               onClick={() => setOpen(open === menu ? null : menu)}
-              className={`${navLink} cursor-pointer gap-1.5 ${open === menu ? "text-fg" : ""}`}
+              className={`${navLink} cursor-pointer gap-1.5 ${open === menu ? "text-magenta-strong" : ""}`}
             >
               {MENU_LABEL[menu]}
               <svg
@@ -105,29 +124,22 @@ export function SiteHeader({ styles, shops }: { styles: NavStyle[]; shops: NavSh
             aria-label="เมนู"
             aria-expanded={mobileOpen}
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="-ml-2 inline-flex size-11 items-center justify-center text-fg-soft"
+            className={iconLink}
           >
             <MenuIcon />
           </button>
         </div>
 
-        <Link
-          href="/"
-          onClick={closeAll}
-          className="chrome-text text-center text-[22px] leading-none tracking-[0.02em] sm:text-[28px] md:text-4xl"
-        >
-          {WORDMARK}
-        </Link>
+        {/* The path is only known per request, so pages that cannot know it ahead show the wordmark. */}
+        <Suspense fallback={<Wordmark onNavigate={closeAll} />}>
+          <HeaderCenter issue={issue} onNavigate={closeAll} />
+        </Suspense>
 
-        <div className="flex justify-end gap-1">
-          <Link href="/search" aria-label="ค้นหา" className="inline-flex size-11 items-center justify-center text-fg-soft hover:text-fg">
+        <div className="flex items-center justify-end gap-1">
+          <Link href="/search" aria-label="ค้นหา" className={iconLink}>
             <SearchIcon />
           </Link>
-          <Link
-            href="/account"
-            aria-label="บัญชีของฉัน"
-            className="hidden size-11 items-center justify-center text-fg-soft hover:text-fg md:inline-flex"
-          >
+          <Link href="/account" aria-label="บัญชีของฉัน" className={`${iconLink} hidden md:inline-flex`}>
             <AccountIcon />
           </Link>
         </div>
@@ -138,7 +150,7 @@ export function SiteHeader({ styles, shops }: { styles: NavStyle[]; shops: NavSh
           id={`${baseId}-${open}`}
           role="region"
           aria-label={MENU_LABEL[open]}
-          className="absolute inset-x-0 top-full hidden border-y border-line bg-ink-raised px-10 py-10 shadow-[0_24px_40px_rgba(0,0,0,0.5)] md:block"
+          className="absolute inset-x-0 top-full hidden border-y-2 border-print bg-paper px-10 py-10 shadow-[0_18px_30px_rgba(17,17,17,0.12)] md:block"
         >
           {open === "styles" ? (
             <StyleLinks styles={styles} onNavigate={closeAll} />
@@ -154,27 +166,27 @@ export function SiteHeader({ styles, shops }: { styles: NavStyle[]; shops: NavSh
           role="dialog"
           aria-modal="true"
           aria-label="เมนู"
-          className="fixed inset-0 z-50 overflow-y-auto bg-ink px-4 pb-12 pt-3 md:hidden"
+          className="fixed inset-0 z-50 overflow-y-auto bg-paper px-4 pt-1.5 pb-12 md:hidden"
         >
           <div className="flex items-center justify-between">
             <button
               type="button"
               aria-label="ปิดเมนู"
               onClick={() => setMobileOpen(false)}
-              className="-ml-2 inline-flex size-11 items-center justify-center text-fg-soft"
+              className={`${iconLink} -ml-2`}
             >
               <CloseIcon />
             </button>
-            <Link href="/account" onClick={closeAll} className="inline-flex h-11 items-center text-[17px] text-fg-soft">
+            <Link href="/account" onClick={closeAll} className="wide inline-flex h-11 items-center text-xs tracking-[0.06em]">
               ACCOUNT
             </Link>
           </div>
-          <Link href="/discover" onClick={closeAll} className="mt-6 block text-5xl leading-tight">
+          <Link href="/discover" onClick={closeAll} className="cond mt-6 block text-[64px] leading-[0.9] text-magenta">
             DISCOVER
           </Link>
-          <p className="label-caps mt-10 border-b border-line pb-3">STYLES</p>
+          <p className="label-wide mt-10 border-b-2 border-print pb-2">STYLES</p>
           <StyleLinks styles={styles} onNavigate={closeAll} compact />
-          <p className="label-caps mt-10 border-b border-line pb-3">SHOPS</p>
+          <p className="label-wide mt-10 border-b-2 border-print pb-2">SHOPS</p>
           <ShopLinks shops={shops} onNavigate={closeAll} compact />
         </div>
       )}
@@ -192,8 +204,8 @@ function StyleLinks({ styles, onNavigate, compact = false }: { styles: NavStyle[
             onClick={onNavigate}
             className={
               compact
-                ? "flex min-h-12 items-center border-b border-line text-2xl"
-                : "inline-flex min-h-12 items-center text-[32px] leading-none text-fg-soft hover:text-fg"
+                ? "cond flex min-h-14 items-center border-b border-print text-[34px] leading-none"
+                : "cond inline-flex min-h-14 items-center text-[46px] leading-none hover:text-magenta-strong"
             }
           >
             {style.name_en.toUpperCase()}
@@ -208,7 +220,7 @@ function ShopLinks({ shops, onNavigate, compact = false }: { shops: NavShop[]; o
   return (
     <div className={compact ? "" : "mx-auto max-w-6xl"}>
       {shops.length === 0 ? (
-        <p className="py-4 font-sans tracking-normal text-muted">ยังไม่มีร้าน</p>
+        <p className="py-4 text-muted">ยังไม่มีร้าน</p>
       ) : (
         <ul className={compact ? "flex flex-col" : "grid grid-cols-2 gap-x-16"}>
           {shops.map((shop) => (
@@ -216,10 +228,10 @@ function ShopLinks({ shops, onNavigate, compact = false }: { shops: NavShop[]; o
               <Link
                 href={`/${shop.slug}`}
                 onClick={onNavigate}
-                className="flex min-h-12 items-baseline justify-between gap-4 border-b border-line py-2 text-fg-soft hover:text-fg"
+                className="flex min-h-12 items-baseline justify-between gap-4 border-b border-print py-2.5 hover:text-magenta-strong"
               >
-                <span className={compact ? "text-2xl" : "text-[26px] leading-tight"}>{shop.display_name}</span>
-                <span className="shrink-0 font-sans text-sm tracking-normal text-muted">{shop.province}</span>
+                <span className={`wide leading-tight ${compact ? "text-[15px]" : "text-lg"}`}>{shop.display_name}</span>
+                <span className="shrink-0 text-sm text-muted">{shop.province}</span>
               </Link>
             </li>
           ))}
@@ -228,7 +240,7 @@ function ShopLinks({ shops, onNavigate, compact = false }: { shops: NavShop[]; o
       <Link
         href="/shops"
         onClick={onNavigate}
-        className="mt-6 inline-flex h-11 items-center text-[17px] tracking-button text-fg underline-offset-8 hover:underline"
+        className="wide mt-6 inline-flex h-11 items-center text-xs tracking-[0.06em] underline underline-offset-4 hover:text-magenta-strong"
       >
         ALL SHOPS
       </Link>

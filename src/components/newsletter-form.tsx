@@ -13,15 +13,15 @@ export function NewsletterForm({ action = noop }: { action?: NewsletterAction })
 
   if (state.status === "done") {
     return (
-      <p role="status" className="flex-[0_1_480px] text-center font-sans text-fg">
+      <p role="status" className="flex-[0_1_480px] text-white">
         {state.message}
       </p>
     );
   }
 
   return (
-    <form action={submit} className="flex flex-[0_1_480px] flex-col gap-2">
-      <div className="flex items-center gap-2.5">
+    <form action={submit} className="flex w-full min-w-0 flex-col gap-2 md:w-auto md:flex-[0_1_480px]">
+      <div className="flex items-stretch">
         <label htmlFor={`${id}-email`} className="sr-only">
           อีเมล
         </label>
@@ -34,14 +34,14 @@ export function NewsletterForm({ action = noop }: { action?: NewsletterAction })
           placeholder="กรอกอีเมลของคุณ"
           aria-invalid={state.status === "error" || undefined}
           aria-describedby={state.status === "error" ? `${id}-error` : undefined}
-          className="field-line flex-1 font-sans"
+          className="field flex-1 border-white"
         />
-        <button type="submit" disabled={pending} className="btn-chrome px-6 text-base">
+        <button type="submit" disabled={pending} className="btn bg-magenta-strong hover:bg-white hover:text-print">
           SUBSCRIBE
         </button>
       </div>
       {state.status === "error" && (
-        <p id={`${id}-error`} role="alert" className="font-sans text-sm text-danger">
+        <p id={`${id}-error`} role="alert" className="text-sm text-[#ff9b8f]">
           {state.message}
         </p>
       )}

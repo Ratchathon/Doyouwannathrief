@@ -38,25 +38,23 @@ const COLUMNS = [
   },
 ] as const;
 
-const heading = "mb-1.5 font-display text-xl tracking-[0.04em] text-fg";
-const link = "inline-flex min-h-8 items-center text-fg-soft hover:text-fg";
+const heading = "wide mb-1.5 text-[13px] tracking-[0.06em] text-white";
+const link = "inline-flex min-h-9 items-center text-[#cfcfcf] hover:text-white";
 
 export function SiteFooter({ year, newsletterAction }: { year: number; newsletterAction?: NewsletterAction }) {
   return (
-    <footer className="mt-auto font-label">
-      <div className="flex flex-wrap items-center justify-center gap-8 border-y border-line px-4 py-11 md:px-10">
-        <div className="text-center">
-          <h2 className="chrome-text font-display text-[32px] leading-none font-normal tracking-[0.02em] md:text-[44px]">
-            SIGN UP TO OUR NEWSLETTER
-          </h2>
-          <p className="label-caps mt-2.5">NEW SHOPS AND WEEKLY PICKS</p>
+    <footer className="mt-auto bg-print text-white">
+      <div className="flex flex-wrap items-end justify-between gap-8 border-b border-[#3a3a3a] px-4 pt-12 pb-11 md:px-10">
+        <div>
+          <h2 className="cond text-[44px] leading-[0.9] md:text-[64px]">SIGN UP TO OUR NEWSLETTER</h2>
+          <p className="wide mt-3 text-[11px] tracking-[0.08em] text-[#cfcfcf]">NEW SHOPS AND WEEKLY PICKS</p>
         </div>
         <NewsletterForm action={newsletterAction} />
       </div>
 
-      <div className="grid grid-cols-2 gap-7 px-4 py-12 text-[13px] font-medium tracking-[0.08em] md:grid-cols-4 md:px-10">
+      <div className="grid grid-cols-2 gap-7 px-4 py-12 text-[15px] md:grid-cols-4 md:px-10">
         {COLUMNS.map((col) => (
-          <nav key={col.title} aria-label={col.title} className="flex flex-col gap-1.5">
+          <nav key={col.title} aria-label={col.title} className="flex flex-col gap-1">
             <h2 className={heading}>{col.title}</h2>
             {col.links.map(([label, href]) => (
               <Link key={label} href={href} className={link}>
@@ -65,7 +63,7 @@ export function SiteFooter({ year, newsletterAction }: { year: number; newslette
             ))}
           </nav>
         ))}
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-1">
           <h2 className={heading}>FOLLOW US</h2>
           <div className="flex gap-2">
             {SOCIAL.map(({ name, href, Icon }) => (
@@ -75,7 +73,7 @@ export function SiteFooter({ year, newsletterAction }: { year: number; newslette
                 aria-label={name}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="chrome inline-flex size-11 items-center justify-center rounded-full"
+                className="inline-flex size-11 items-center justify-center border-2 border-white text-white hover:bg-white hover:text-print"
               >
                 <Icon />
               </a>
@@ -84,9 +82,12 @@ export function SiteFooter({ year, newsletterAction }: { year: number; newslette
         </div>
       </div>
 
-      <p className="px-4 pt-5 pb-9 text-center text-[11px] tracking-[0.16em] text-faint">
-        © {year} {WORDMARK} · ALL RIGHTS RESERVED
-      </p>
+      <div className="px-4 pb-9 md:px-10">
+        <p aria-hidden="true" className="cond text-[clamp(44px,12vw,176px)] leading-[0.8] whitespace-nowrap text-magenta-light">
+          {WORDMARK}
+        </p>
+        <p className="wide mt-4 text-[11px] tracking-[0.1em] text-[#b5b5b5]">© {year} {WORDMARK} · ALL RIGHTS RESERVED</p>
+      </div>
     </footer>
   );
 }

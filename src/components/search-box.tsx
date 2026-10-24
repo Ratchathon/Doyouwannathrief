@@ -141,7 +141,9 @@ export function SearchBox({
     <form
       role="search"
       action="/search"
-      className="relative flex w-full items-center gap-2.5"
+      className={`relative flex w-full items-stretch border-2 border-print bg-sheet focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-magenta-strong ${
+        large ? "h-14" : "h-12"
+      }`}
       onBlur={(e) => {
         if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setOpen(false);
       }}
@@ -170,14 +172,16 @@ export function SearchBox({
         onFocus={() => setOpen(true)}
         onKeyDown={onKeyDown}
         placeholder="ลองค้น polo, ลีวายส์ หรือชื่อร้าน"
-        className={`field-line flex-1 ${large ? "h-[52px] text-center text-[17px]" : "h-11 text-base"}`}
+        className={`min-w-0 flex-1 bg-transparent px-3.5 text-print placeholder:text-faint focus-visible:outline-none ${
+          large ? "text-[17px]" : "text-base"
+        }`}
       />
       {large ? (
-        <button type="submit" className="btn-chrome h-[50px] px-6 md:px-7">
+        <button type="submit" className="btn h-auto px-5 md:px-7">
           SEARCH
         </button>
       ) : (
-        <button type="submit" aria-label="ค้นหา" className="inline-flex size-11 items-center justify-center text-fg">
+        <button type="submit" aria-label="ค้นหา" className="inline-flex w-12 items-center justify-center bg-print text-white hover:bg-magenta-strong">
           <SearchIcon />
         </button>
       )}
@@ -187,11 +191,11 @@ export function SearchBox({
           id={`${id}-list`}
           role="listbox"
           aria-label="คำแนะนำ"
-          className="absolute inset-x-0 top-full z-30 mt-2 max-h-[70vh] overflow-y-auto border border-line bg-ink-raised py-2 text-left shadow-[0_24px_40px_rgba(0,0,0,0.5)]"
+          className="absolute -inset-x-0.5 top-full z-30 max-h-[70vh] overflow-y-auto border-2 border-print bg-sheet py-2 text-left shadow-[0_18px_30px_rgba(17,17,17,0.14)]"
         >
           {groups.map((group, g) => (
             <div key={group.name} role="group" aria-label={group.name} className="py-1">
-              <p aria-hidden="true" className="label-caps px-4 pt-2 pb-1">
+              <p aria-hidden="true" className="wide px-4 pt-2 pb-1 text-[11px] tracking-[0.08em] text-muted">
                 {group.name}
               </p>
               {group.options.map((option, o) => {
@@ -204,7 +208,7 @@ export function SearchBox({
                     aria-selected={active === i}
                     onMouseDown={(e) => e.preventDefault()}
                     onMouseEnter={() => setActive(i)}
-                    className={active === i ? "bg-[#202328]" : ""}
+                    className={active === i ? "bg-highlight" : ""}
                   >
                     <Link
                       href={option.href}
@@ -212,7 +216,7 @@ export function SearchBox({
                       onClick={() => setOpen(false)}
                       className="flex min-h-11 items-baseline justify-between gap-4 px-4 py-2"
                     >
-                      <span className="font-display text-lg tracking-[0.02em]">{option.label}</span>
+                      <span className="wide text-[15px] leading-tight">{option.label}</span>
                       {option.detail && <span className="shrink-0 text-sm text-muted">{option.detail}</span>}
                     </Link>
                   </div>

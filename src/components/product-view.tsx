@@ -13,31 +13,36 @@ const PHOTO_NAMES: Record<string, { en: string; th: string }> = {
   extra: { en: "MORE", th: "เพิ่มเติม" },
 };
 
-const label = "font-label text-xs font-semibold tracking-[0.14em] text-muted";
+const label = "wide text-[11px] tracking-[0.08em]";
 const COMING_SOON = "ระบบสั่งซื้อกำลังจะเปิด เร็วๆ นี้";
 
 function StatusOrActions({ status, compact = false }: { status: string; compact?: boolean }) {
   if (status === "reserved" || status === "sold") {
     return (
       <p
-        className={`flex items-center justify-center rounded-full border border-line-strong font-display tracking-button text-fg-soft ${
-          compact ? "h-[52px] flex-1 text-[17px]" : "h-14 text-xl"
-        }`}
+        className={`wide flex items-center justify-center border-2 border-print text-sm ${compact ? "h-[52px] flex-1" : "h-14"}`}
       >
         {status === "sold" ? "SOLD" : "RESERVED"}
       </p>
     );
   }
-  const height = compact ? "h-[52px] text-[17px]" : "h-14 text-xl";
+  const height = compact ? "h-[52px]" : "h-14";
+  // Both stay disabled until ordering opens; they keep their look, dimmed.
   return (
     <>
-      <button type="button" disabled className={`btn-chrome ${height} ${compact ? "order-2 flex-[2]" : "w-full"}`}>
+      <button
+        type="button"
+        disabled
+        className={`wide inline-flex ${height} cursor-not-allowed items-center justify-center bg-magenta-strong text-[15px] text-white opacity-60 ${
+          compact ? "order-2 flex-[1.4]" : "w-full"
+        }`}
+      >
         BUY NOW
       </button>
       <button
         type="button"
         disabled
-        className={`inline-flex ${height} cursor-not-allowed items-center justify-center rounded-full border border-line-strong font-display tracking-button text-fg opacity-60 ${
+        className={`wide inline-flex ${height} cursor-not-allowed items-center justify-center border-2 border-print bg-sheet text-xs text-print opacity-60 ${
           compact ? "order-1 flex-1" : "w-full"
         }`}
       >
@@ -78,19 +83,19 @@ export function ProductView({ product }: { product: ProductPage }) {
 
   return (
     <div className="mx-auto w-full max-w-[1360px] pb-28 md:px-10 md:pb-24">
-      <nav aria-label="Breadcrumb" className="px-4 pt-2 font-label text-xs font-semibold tracking-[0.14em] text-faint md:px-0">
-        <Link href={`/${product.shop.slug}`} className="hover:text-fg">
+      <nav aria-label="Breadcrumb" className="wide px-4 pt-3 text-[11px] text-muted md:px-0">
+        <Link href={`/${product.shop.slug}`} className="hover:text-print">
           {product.shop.name}
         </Link>{" "}
         /{" "}
-        <Link href={`/categories/${product.category.value}`} className="hover:text-fg">
+        <Link href={`/categories/${product.category.value}`} className="hover:text-print">
           {product.category.en}
         </Link>
       </nav>
 
       <div className="mt-4 flex flex-wrap gap-8 md:mt-6 md:gap-14">
         <section aria-label="รูปสินค้า" className="flex min-w-0 flex-[999_1_560px] flex-col gap-3 md:flex-row-reverse md:gap-4">
-          <div className="relative aspect-[4/5] w-full overflow-hidden bg-gradient-to-b from-[#1a1c20] to-[#121316] md:max-h-[820px] md:border md:border-[#23262a]">
+          <div className="relative aspect-[4/5] w-full overflow-hidden bg-photo md:max-h-[820px]">
             {photo ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -100,12 +105,12 @@ export function ProductView({ product }: { product: ProductPage }) {
               />
             ) : null}
             {status !== "active" && (
-              <span className="chrome absolute top-3 left-3 inline-flex h-7 items-center rounded-full px-3 font-label text-xs font-bold tracking-[0.1em]">
+              <span className="wide absolute top-3 left-3 bg-print px-2 py-1 text-[11px] text-white">
                 {status === "sold" ? "SOLD" : "RESERVED"}
               </span>
             )}
           </div>
-          <div className="flex gap-2 overflow-x-auto px-4 md:w-[88px] md:shrink-0 md:flex-col md:px-0">
+          <div className="flex overflow-x-auto px-4 md:w-[88px] md:shrink-0 md:flex-col md:gap-2 md:px-0">
             {product.photos.map((p) => {
               const name = PHOTO_NAMES[p.kind] ?? { en: p.kind.toUpperCase(), th: p.kind };
               const on = p.kind === current;
@@ -116,13 +121,13 @@ export function ProductView({ product }: { product: ProductPage }) {
                   aria-label={`ดูรูป${name.th}`}
                   aria-pressed={on}
                   onClick={() => setCurrent(p.kind)}
-                  className={`relative flex h-11 shrink-0 cursor-pointer items-center justify-center rounded-full border px-4 font-label text-[11px] font-bold tracking-[0.12em] md:aspect-[4/5] md:h-auto md:w-[88px] md:items-end md:rounded-none md:px-0 md:pb-1.5 ${
-                    on ? "border-fg text-fg" : "border-[#3a3e44] text-fg-soft hover:border-muted"
+                  className={`wide relative flex h-11 min-w-0 flex-1 shrink-0 cursor-pointer items-center justify-center border-2 border-print px-2 text-[11px] not-first:-ml-0.5 md:ml-0 md:aspect-[4/5] md:h-auto md:w-[88px] md:flex-none md:items-end md:bg-photo md:px-0 md:pb-1.5 ${
+                    on ? "bg-print text-white md:border-magenta-strong" : "bg-sheet text-print hover:bg-highlight"
                   }`}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={p.url} alt="" className="absolute inset-0 hidden size-full object-cover md:block" />
-                  <span className="relative md:rounded md:bg-ink/80 md:px-1.5">{name.en}</span>
+                  <span className={`relative md:px-1.5 ${on ? "md:bg-print md:text-white" : "md:bg-sheet md:text-print"}`}>{name.en}</span>
                 </button>
               );
             })}
@@ -131,31 +136,31 @@ export function ProductView({ product }: { product: ProductPage }) {
 
         <section aria-label="รายละเอียดสินค้า" className="flex min-w-0 flex-[1_1_380px] flex-col gap-5 px-4 md:gap-6 md:px-0">
           <div>
-            {product.brand && <p className={`${label} text-[13px] tracking-[0.16em]`}>{product.brand.toUpperCase()}</p>}
-            <h1 className="mt-1.5 text-[22px] leading-snug font-medium md:mt-2 md:text-[28px]">{product.title}</h1>
-            <p className="mt-3 font-display text-[40px] leading-none tracking-[0.01em] md:text-5xl">
+            {product.brand && <p className="wide text-xs">{product.brand.toUpperCase()}</p>}
+            <h1 className="mt-1.5 text-[22px] leading-snug font-semibold md:mt-2 md:text-[28px]">{product.title}</h1>
+            <p className="cond mt-2 text-[68px] leading-[0.9] md:text-[84px]">
               {formatBaht(product.priceSatang)}
             </p>
           </div>
 
-          <dl className="grid grid-cols-2 gap-x-6 gap-y-3.5 border-y border-line py-4">
+          <dl className="grid grid-cols-2 gap-x-6 gap-y-3.5 border-y-2 border-print py-4">
             <div>
               <dt className={label}>SIZE ON LABEL</dt>
-              <dd className="font-display text-2xl">{product.sizeLabel}</dd>
+              <dd className="cond mt-1 text-[38px] leading-none">{product.sizeLabel}</dd>
             </div>
             <div>
               <dt className={label}>CONDITION</dt>
-              <dd>{product.conditionLabel}</dd>
+              <dd className="mt-1 font-semibold">{product.conditionLabel}</dd>
             </div>
             {product.measurements.length > 0 && (
               <div className="col-span-2">
                 <dt className={label}>MEASUREMENTS (CM)</dt>
                 <dd>
-                  <ul aria-label="ขนาด (ซม.)" className="mt-2 flex gap-2.5">
+                  <ul aria-label="ขนาด (ซม.)" className="mt-2 flex">
                     {product.measurements.map((m) => (
-                      <li key={m.label} className="flex flex-1 flex-col items-center border border-line p-2.5">
-                        <span className="font-display text-[26px] leading-none">{m.cm}</span>
-                        <span className="text-[13px] text-muted">{m.label}</span>
+                      <li key={m.label} className="flex flex-1 flex-col border-l border-print pl-3 first:border-l-0 first:pl-0">
+                        <span className="cond tabular text-[44px] leading-[0.95]">{m.cm}</span>
+                        <span className="text-[13px]">{m.label}</span>
                       </li>
                     ))}
                   </ul>
@@ -165,14 +170,14 @@ export function ProductView({ product }: { product: ProductPage }) {
           </dl>
 
           {product.flawsNote && (
-            <div className="border border-[#5a4a2a] bg-[#17140e] px-4 py-3.5">
-              <p className="font-label text-xs font-bold tracking-[0.14em] text-[#e8c887]">FLAWS</p>
-              <p className="mt-1">{product.flawsNote}</p>
+            <div className="bg-highlight px-4 py-3.5">
+              <p className="wide text-xs">FLAWS</p>
+              <p className="mt-1 font-medium">{product.flawsNote}</p>
               {kinds.includes("flaw") && (
                 <button
                   type="button"
                   onClick={() => setCurrent("flaw")}
-                  className="mt-1.5 cursor-pointer text-sm text-[#e8c887] underline underline-offset-4"
+                  className="mt-1.5 cursor-pointer py-1 text-sm font-semibold underline underline-offset-4"
                 >
                   ดูจุดตำหนิในรูป
                 </button>
@@ -192,7 +197,7 @@ export function ProductView({ product }: { product: ProductPage }) {
                 <Link
                   key={s.slug}
                   href={`/styles/${s.slug}`}
-                  className="inline-flex h-9 items-center rounded-full border border-[#3a3e44] px-3.5 font-label text-xs font-semibold tracking-[0.12em] hover:border-muted"
+                  className="wide inline-flex h-9 items-center border-2 border-print bg-sheet px-3 text-[11px] hover:bg-highlight"
                 >
                   {s.en}
                 </Link>
@@ -202,11 +207,11 @@ export function ProductView({ product }: { product: ProductPage }) {
 
           <Link
             href={`/${product.shop.slug}`}
-            className="flex items-center justify-between gap-4 border-y border-line py-4 text-fg hover:text-white"
+            className="group flex items-center justify-between gap-4 border-y-2 border-print py-4 hover:text-magenta-strong"
           >
             <span className="flex flex-col">
               <span className={label}>SOLD BY</span>
-              <span className="font-display text-[26px] leading-tight md:text-[28px]">{product.shop.name}</span>
+              <span className="cond text-[36px] leading-none md:text-[40px]">{product.shop.name}</span>
               <span className="text-sm text-muted">{product.shop.province}</span>
             </span>
             <svg viewBox="0 0 24 24" aria-hidden="true" className="size-5 fill-none stroke-current stroke-[1.8]">
@@ -214,10 +219,10 @@ export function ProductView({ product }: { product: ProductPage }) {
             </svg>
           </Link>
 
-          {product.description && <p className="text-[15px] text-[#b4b9bf]">{product.description}</p>}
+          {product.description && <p className="text-[15px] text-print-soft">{product.description}</p>}
           <Link
             href={`/report?product=${product.id}`}
-            className="self-start text-sm text-faint underline underline-offset-4 hover:text-fg-soft"
+            className="self-start text-sm text-muted underline underline-offset-4 hover:text-print"
           >
             แจ้งปัญหาสินค้านี้
           </Link>
@@ -225,7 +230,7 @@ export function ProductView({ product }: { product: ProductPage }) {
       </div>
 
       {/* Phone: actions stay at the bottom of the screen. */}
-      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-ink/95 px-4 pt-3 pb-[max(12px,env(safe-area-inset-bottom))] backdrop-blur md:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t-2 border-print bg-paper px-4 pt-3 pb-[max(12px,env(safe-area-inset-bottom))] md:hidden">
         <div className="flex gap-2.5">
           <StatusOrActions status={status} compact />
         </div>

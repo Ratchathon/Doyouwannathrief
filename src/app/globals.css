@@ -1,46 +1,53 @@
 @import "tailwindcss";
 
 /*
- * doyouwannathrift design system: black + glossy metallic chrome.
- * Anton for headings, nav and buttons (English, upper case).
- * Archivo for small spaced labels. Anuphan for Thai body text.
+ * doyouwannathrift design system: a street-snap magazine.
+ * Coated white paper, black ink, process magenta for the masthead and big
+ * numerals, process yellow as a highlighter. Archivo (variable width):
+ * 62% Black for display, 125% Bold for labels and buttons. Anuphan for Thai.
  */
 
 @theme static {
-  --color-ink: #0b0c0e;
-  --color-ink-raised: #15171a;
-  --color-ink-glow: #1a1d21;
-  --color-fg: #e6e8eb;
-  --color-fg-soft: #c9cdd2;
-  --color-muted: #9ba1a8;
-  --color-faint: #8a9097;
-  --color-line: #2a2d32;
-  --color-line-strong: #6e747b;
-  --color-on-chrome: #15171a;
-  --color-danger: #ff8a80;
+  --color-paper: #fbfbfa;
+  --color-sheet: #ffffff;
+  --color-print: #111111;
+  --color-print-soft: #2a2a2a;
+  /* Secondary and tertiary text, both above 4.5:1 on paper. */
+  --color-muted: #505050;
+  --color-faint: #666666;
+  --color-line: #d2d2cd;
+  /* Magenta stays at display sizes; the strong shade carries white text. */
+  --color-magenta: #e4007c;
+  --color-magenta-strong: #c4006b;
+  /* Magenta for text on the black footer. */
+  --color-magenta-light: #ff4fa8;
+  --color-highlight: #ffe500;
+  --color-photo: #e7e5e1;
+  --color-danger: #b3261e;
 
-  --font-display: "Anton", "Anuphan", sans-serif;
-  --font-label: "Archivo", "Anuphan", sans-serif;
+  --font-display: "Archivo Variable", "Anuphan", sans-serif;
   --font-sans: "Anuphan", system-ui, sans-serif;
-
-  --tracking-nav: 0.06em;
-  --tracking-button: 0.08em;
-  --tracking-label: 0.14em;
 }
 
 @layer base {
   html {
-    color-scheme: dark;
-    background: var(--color-ink);
+    color-scheme: light;
+    background: var(--color-paper);
+    scrollbar-color: var(--color-print) var(--color-paper);
   }
 
   body {
-    background: radial-gradient(1100px 520px at 50% -8%, var(--color-ink-glow) 0%, var(--color-ink) 62%) no-repeat,
-      var(--color-ink);
-    color: var(--color-fg);
+    background: var(--color-paper);
+    color: var(--color-print);
     font-family: var(--font-sans);
     font-size: 16px;
-    line-height: 1.7;
+    line-height: 1.65;
+    caret-color: var(--color-magenta-strong);
+  }
+
+  ::selection {
+    background: var(--color-highlight);
+    color: var(--color-print);
   }
 
   a {
@@ -49,99 +56,88 @@
   }
 
   :where(a, button, input, select, textarea, summary):focus-visible {
-    outline: 1.5px solid var(--color-fg);
-    outline-offset: 4px;
+    outline: 2px solid var(--color-magenta-strong);
+    outline-offset: 2px;
   }
 }
 
-/* Polished chrome lettering for the wordmark and hero words. */
-@utility chrome-text {
-  background: linear-gradient(
-    180deg,
-    #ffffff 0%,
-    #f1f3f5 16%,
-    #b8bec5 34%,
-    #5b626a 49%,
-    #2e3339 52%,
-    #9aa1a9 63%,
-    #e9ecef 78%,
-    #ffffff 86%,
-    #a5acb4 100%
-  );
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  filter: drop-shadow(0 2px 0 #1c1f23) drop-shadow(0 14px 22px rgba(0, 0, 0, 0.6));
+/* Masthead and display lines: Archivo at its narrowest and heaviest. */
+@utility cond {
+  font-family: var(--font-display);
+  font-stretch: 62%;
+  font-weight: 900;
+  letter-spacing: -0.01em;
 }
 
-/* Chrome surface for buttons and icon discs. */
-@utility chrome {
-  background: linear-gradient(180deg, #fdfeff 0%, #e9ecef 22%, #c2c8ce 47%, #a3aab1 53%, #d3d8dd 74%, #f6f8fa 100%);
-  box-shadow:
-    inset 0 1px 0 #ffffff,
-    inset 0 -2px 4px rgba(0, 0, 0, 0.35),
-    0 6px 18px rgba(0, 0, 0, 0.45);
-  color: var(--color-on-chrome);
-  transition: filter 0.15s ease, transform 0.1s ease;
+/* Labels, nav and buttons: Archivo at its widest. */
+@utility wide {
+  font-family: var(--font-display);
+  font-stretch: 125%;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+@utility label-wide {
+  @apply wide text-[11px] tracking-[0.08em] text-print;
+}
+
+/* Black block button; magenta on hover. */
+@utility btn {
+  @apply wide inline-flex h-12 cursor-pointer items-center justify-center border-0 bg-print px-6 text-[13px] tracking-[0.06em] text-white transition-colors;
   &:hover {
-    filter: brightness(1.06);
-  }
-  &:active {
-    transform: translateY(1px);
+    background: var(--color-magenta-strong);
   }
   &:disabled {
-    filter: grayscale(1) brightness(0.7);
     cursor: not-allowed;
+    background: var(--color-faint);
   }
 }
 
-/* Standard chrome pill button. */
-@utility btn-chrome {
-  @apply chrome inline-flex h-12 cursor-pointer items-center justify-center rounded-full border-0 px-7 font-display text-[17px] tracking-button;
-}
-
-/* Vertical chrome slab used for the style pillars on the homepage. */
-@utility slab {
-  position: relative;
-  display: block;
-  background: linear-gradient(
-    90deg,
-    #5e656d 0%,
-    #c9ced4 14%,
-    #ffffff 21%,
-    #e6e9ec 27%,
-    #9aa1a9 42%,
-    #4e555c 58%,
-    #7d848c 70%,
-    #d8dce0 84%,
-    #8a9199 100%
-  );
-  box-shadow:
-    inset 0 2px 0 rgba(255, 255, 255, 0.7),
-    inset 0 -6px 12px rgba(0, 0, 0, 0.35),
-    0 24px 40px rgba(0, 0, 0, 0.55);
-  border-radius: 6px 6px 2px 2px;
-  transition: transform 0.25s ease;
-  &::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0) 18%);
+/* Outlined button on paper. */
+@utility btn-outline {
+  @apply wide inline-flex h-12 cursor-pointer items-center justify-center border-2 border-print bg-sheet px-6 text-[13px] tracking-[0.06em] text-print transition-colors;
+  &:hover {
+    background: var(--color-print);
+    color: #fff;
+  }
+  &:disabled {
+    cursor: not-allowed;
+    border-color: var(--color-faint);
+    color: var(--color-faint);
+    background: var(--color-sheet);
   }
 }
 
-/* Underlined field on black. */
-@utility field-line {
-  @apply h-12 min-w-0 border-0 border-b border-line-strong bg-transparent text-fg placeholder:text-faint;
+/* Boxed text field. */
+@utility field {
+  @apply h-12 min-w-0 border-2 border-print bg-sheet px-3.5 text-print placeholder:text-faint;
   &:focus-visible {
-    outline: none;
-    border-bottom-color: var(--color-fg);
+    outline: 2px solid var(--color-magenta-strong);
+    outline-offset: 0;
   }
 }
 
-@utility label-caps {
-  @apply font-label text-xs font-semibold tracking-label text-muted;
+/* Yellow highlighter behind a run of text; wraps line by line. */
+@utility marker {
+  background: linear-gradient(var(--color-highlight), var(--color-highlight)) no-repeat 0 0 / 100% 100%;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  padding-inline: 0.2em;
+}
+
+/* The page's one authored moment: the highlighter is drawn once across the cover line. */
+@utility marker-sweep {
+  animation: marker-sweep 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+}
+
+@keyframes marker-sweep {
+  from {
+    background-size: 0% 100%;
+  }
+}
+
+@utility tabular {
+  font-variant-numeric: tabular-nums;
 }
 
 @media (prefers-reduced-motion: reduce) {

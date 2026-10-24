@@ -16,7 +16,7 @@ export function ProvinceSelect({ action, value }: { action: string; value: strin
         name="province"
         defaultValue={value ?? ""}
         onChange={(e) => e.currentTarget.form?.requestSubmit()}
-        className="h-10 max-w-[180px] cursor-pointer rounded-full border border-[#3a3e44] bg-[#121316] px-3 text-sm text-fg-soft"
+        className="h-10 max-w-[200px] cursor-pointer border-2 border-print bg-sheet px-2.5 text-sm text-print"
       >
         <option value="">เลือกจังหวัด</option>
         {PROVINCES.map((p) => (
@@ -26,7 +26,7 @@ export function ProvinceSelect({ action, value }: { action: string; value: strin
         ))}
       </select>
       <noscript>
-        <button type="submit" className="h-10 rounded-full border border-[#3a3e44] px-3 text-sm">
+        <button type="submit" className="btn h-10 px-4">
           ดู
         </button>
       </noscript>
