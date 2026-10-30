@@ -61,6 +61,11 @@ describe("ProductView", () => {
     expect(within(list).getByText("74").parentElement).toHaveTextContent("ยาว");
   });
 
+  it("fetches the main photo before anything else", () => {
+    render(<ProductView product={product} />);
+    expect(mainPhoto()).toHaveAttribute("fetchpriority", "high");
+  });
+
   it("starts on the front photo and switches photos with the buttons", async () => {
     const user = userEvent.setup();
     render(<ProductView product={product} />);

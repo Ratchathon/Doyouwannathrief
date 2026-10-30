@@ -3,6 +3,7 @@ import type { HomeShop } from "@/components/home-view";
 import { ProvinceSelect } from "@/components/province-select";
 import { ItemCard, type ResultItem } from "@/components/results-view";
 import { ShopDiscRow } from "@/components/shop-disc";
+import { morphClaimer } from "@/lib/motion";
 
 export type DiscoverData = {
   trending: (ResultItem & { views: number })[];
@@ -49,12 +50,23 @@ function Row({
   );
 }
 
-function Items({ items, badge }: { items: ResultItem[]; badge?: (item: ResultItem) => string }) {
+function Items({
+  items,
+  badge,
+  claim,
+  priority = false,
+}: {
+  items: ResultItem[];
+  badge?: (item: ResultItem) => string;
+  claim: (id: string) => boolean;
+  /** The first row on the page: its first cards load straight away. */
+  priority?: boolean;
+}) {
   return (
     <ul className="-mx-4 flex snap-x scroll-px-4 gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:none] md:-mx-10 md:scroll-px-10 md:gap-5 md:px-10">
-      {items.map((item) => (
+      {items.map((item, i) => (
         <li key={item.id} className="w-[150px] shrink-0 snap-start md:w-[230px]">
-          <ItemCard item={item} badge={badge?.(item)} />
+          <ItemCard item={item} badge={badge?.(item)} morph={claim(item.id)} priority={priority && i < 5} />
         </li>
       ))}
     </ul>
@@ -64,6 +76,8 @@ function Items({ items, badge }: { items: ResultItem[]; badge?: (item: ResultIte
 export function DiscoverView({ data }: { data: DiscoverData }) {
   const { trending, dropped, near, cheap, shops, province } = data;
   const views = new Map(trending.map((t) => [t.id, t.views]));
+  // The same item can sit in several rows; only its first card morphs into the item page.
+  const claim = morphClaimer();
   return (
     <div className="mx-auto w-full max-w-[1360px] px-4 pt-5 pb-24 md:px-10 md:pt-10">
       <h1 className="cond text-[min(26vw,200px)] leading-[0.8] tracking-[-0.02em] text-magenta md:text-[176px]">DISCOVER</h1>
@@ -73,12 +87,12 @@ export function DiscoverView({ data }: { data: DiscoverData }) {
 
       {trending.length > 0 && (
         <Row title="TRENDING" hint="คนกดดูเยอะสุดใน 7 วันนี้">
-          <Items items={trending} badge={(item) => `${views.get(item.id)} VIEWS`} />
+          <Items items={trending} badge={(item) => `${views.get(item.id)} VIEWS`} claim={claim} priority />
         </Row>
       )}
 
       <Row title="JUST DROPPED" hint="เพิ่งลงขายล่าสุด" href="/search">
-        {dropped.length > 0 ? <Items items={dropped} /> : <p className="py-6 text-muted">ยังไม่มีของใหม่</p>}
+        {dropped.length > 0 ? <Items items={dropped} claim={claim} priority={trending.length === 0} /> : <p className="py-6 text-muted">ยังไม่มีของใหม่</p>}
       </Row>
 
       <Row
@@ -90,14 +104,14 @@ export function DiscoverView({ data }: { data: DiscoverData }) {
         {!province ? (
           <p className="py-6 text-muted">เลือกจังหวัดเพื่อดูของจากร้านใกล้คุณ</p>
         ) : near.length > 0 ? (
-          <Items items={near} />
+          <Items items={near} claim={claim} />
         ) : (
           <p className="py-6 text-muted">ยังไม่มีของในจังหวัดนี้ ลองจังหวัดใกล้เคียง</p>
         )}
       </Row>
 
       <Row title="UNDER ฿500" hint="ราคาเบา ไม่ต้องคิดเยอะ" href="/search?max=500">
-        {cheap.length > 0 ? <Items items={cheap} /> : <p className="py-6 text-muted">ยังไม่มีของราคานี้</p>}
+        {cheap.length > 0 ? <Items items={cheap} claim={claim} /> : <p className="py-6 text-muted">ยังไม่มีของราคานี้</p>}
       </Row>
 
       <Row title="NEW SHOPS" hint="ร้านที่เพิ่งเปิด" href="/shops">

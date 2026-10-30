@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useEffect, useId, useState } from "react";
+import { useActionState, useEffect, useId, useState, ViewTransition } from "react";
 import type { ProductPage } from "@/lib/catalog/shop";
+import { photoMorphName } from "@/lib/motion";
 import { formatBaht } from "@/lib/search/results";
 
 const PHOTO_NAMES: Record<string, { en: string; th: string }> = {
@@ -192,21 +193,24 @@ export function ProductView({ product, trade }: { product: ProductPage; trade?: 
 
       <div className="mt-4 flex flex-wrap gap-8 md:mt-6 md:gap-14">
         <section aria-label="รูปสินค้า" className="flex min-w-0 flex-[999_1_560px] flex-col gap-3 md:flex-row-reverse md:gap-4">
-          <div className="relative aspect-[4/5] w-full overflow-hidden bg-photo md:max-h-[820px]">
-            {photo ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={photo.url}
-                alt={`${product.title} · ${PHOTO_NAMES[photo.kind]?.th ?? photo.kind}`}
-                className="size-full object-cover"
-              />
-            ) : null}
-            {status !== "active" && (
-              <span className="wide absolute top-3 left-3 bg-print px-2 py-1 text-[11px] text-white">
-                {status === "sold" ? "SOLD" : "RESERVED"}
-              </span>
-            )}
-          </div>
+          <ViewTransition name={photoMorphName(product.id)} share="morph" default="none">
+            <div className="relative aspect-[4/5] w-full overflow-hidden bg-photo md:max-h-[820px]">
+              {photo ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={photo.url}
+                  alt={`${product.title} · ${PHOTO_NAMES[photo.kind]?.th ?? photo.kind}`}
+                  fetchPriority="high"
+                  className="size-full object-cover"
+                />
+              ) : null}
+              {status !== "active" && (
+                <span className="wide absolute top-3 left-3 bg-print px-2 py-1 text-[11px] text-white">
+                  {status === "sold" ? "SOLD" : "RESERVED"}
+                </span>
+              )}
+            </div>
+          </ViewTransition>
           <div className="flex overflow-x-auto px-4 md:w-[88px] md:shrink-0 md:flex-col md:gap-2 md:px-0">
             {product.photos.map((p) => {
               const name = PHOTO_NAMES[p.kind] ?? { en: p.kind.toUpperCase(), th: p.kind };

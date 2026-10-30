@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { render, screen, within } from "@testing-library/react";
-import { ResultsView, type ResultsViewProps } from "@/components/results-view";
+import { ItemCard, ResultsView, type ResultsViewProps } from "@/components/results-view";
 
 const base: ResultsViewProps = {
   title: "RESULTS FOR “POLO”",
@@ -101,5 +101,28 @@ describe("ResultsView", () => {
   it("shows the filter controls in the items toolbar", () => {
     render(<ResultsView {...base} filters={<div role="group" aria-label="ตัวกรอง" />} />);
     expect(within(screen.getByRole("region", { name: "ITEMS" })).getByRole("group", { name: "ตัวกรอง" })).toBeInTheDocument();
+  });
+});
+
+describe("ItemCard photo loading", () => {
+  const item = base.items[0];
+
+  it("loads lazily by default", () => {
+    render(<ItemCard item={item} />);
+    const img = screen.getByRole("img", { name: item.title });
+    expect(img).toHaveAttribute("loading", "lazy");
+    expect(img).not.toHaveAttribute("fetchpriority");
+  });
+
+  it("loads first-row photos straight away", () => {
+    render(<ItemCard item={item} priority />);
+    const img = screen.getByRole("img", { name: item.title });
+    expect(img).toHaveAttribute("loading", "eager");
+    expect(img).toHaveAttribute("fetchpriority", "high");
+  });
+
+  it("gives the first row of results priority", () => {
+    render(<ResultsView {...base} />);
+    expect(screen.getByRole("img", { name: base.items[0].title })).toHaveAttribute("loading", "eager");
   });
 });

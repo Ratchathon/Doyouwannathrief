@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { FacebookIcon, InstagramIcon, TikTokIcon } from "@/components/icons";
-import { ItemCard } from "@/components/results-view";
+import { FIRST_ROW, ItemCard } from "@/components/results-view";
 import { SortSelect } from "@/components/sort-select";
 import type { ShopPage } from "@/lib/catalog/shop";
 import type { Category } from "@/lib/products/listing";
@@ -130,9 +130,9 @@ export function ShopView({
           </p>
         ) : (
           <ul className="grid grid-cols-2 gap-x-3 gap-y-8 pt-7 sm:grid-cols-3 md:gap-x-5 lg:grid-cols-4 xl:grid-cols-5">
-            {items.map((item) => (
+            {items.map((item, i) => (
               <li key={item.id}>
-                <ItemCard item={item} showShop={false} />
+                <ItemCard item={item} showShop={false} priority={i < FIRST_ROW} />
               </li>
             ))}
           </ul>

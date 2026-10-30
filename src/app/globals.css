@@ -81,11 +81,17 @@
   @apply wide text-[11px] tracking-[0.08em] text-print;
 }
 
-/* Black block button; magenta on hover. */
+/* Black block button; magenta on hover, pressed in on tap. */
 @utility btn {
-  @apply wide inline-flex h-12 cursor-pointer items-center justify-center border-0 bg-print px-6 text-[13px] tracking-[0.06em] text-white transition-colors;
+  @apply wide inline-flex h-12 cursor-pointer items-center justify-center border-0 bg-print px-6 text-[13px] tracking-[0.06em] text-white;
+  transition:
+    background-color 150ms ease-out,
+    transform 120ms ease-out;
   &:hover {
     background: var(--color-magenta-strong);
+  }
+  &:active:not(:disabled) {
+    transform: scale(0.97);
   }
   &:disabled {
     cursor: not-allowed;
@@ -95,10 +101,17 @@
 
 /* Outlined button on paper. */
 @utility btn-outline {
-  @apply wide inline-flex h-12 cursor-pointer items-center justify-center border-2 border-print bg-sheet px-6 text-[13px] tracking-[0.06em] text-print transition-colors;
+  @apply wide inline-flex h-12 cursor-pointer items-center justify-center border-2 border-print bg-sheet px-6 text-[13px] tracking-[0.06em] text-print;
+  transition:
+    background-color 150ms ease-out,
+    color 150ms ease-out,
+    transform 120ms ease-out;
   &:hover {
     background: var(--color-print);
     color: #fff;
+  }
+  &:active:not(:disabled) {
+    transform: scale(0.97);
   }
   &:disabled {
     cursor: not-allowed;
@@ -140,11 +153,69 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* Taps show the pressed state instead of the browser's grey flash. */
+html {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/*
+ * View transitions (React <ViewTransition>).
+ * .page   the main column on navigation and when a loading section fills in:
+ *         the old page leaves fast, the new one rises 8px and fades in.
+ * .morph  an item's card photo flies into the item page's photo, and back.
+ * The header is not part of either, so it stays still.
+ */
+::view-transition {
+  pointer-events: none; /* clicks during a transition reach the page */
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+}
+::view-transition-group(.page) {
+  animation: none;
+}
+::view-transition-old(.page) {
+  animation: 120ms ease-in both vt-fade-out;
+}
+::view-transition-new(.page) {
+  animation: 220ms cubic-bezier(0.2, 0.8, 0.2, 1) 60ms both vt-rise;
+}
+::view-transition-group(.morph) {
+  animation-duration: 340ms;
+  animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+::view-transition-image-pair(.morph) {
+  animation-name: vt-soften;
+}
+
+@keyframes vt-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes vt-rise {
+  from {
+    opacity: 0;
+    translate: 0 8px;
+  }
+}
+@keyframes vt-soften {
+  40% {
+    filter: blur(2px);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
     transition: none !important;
+    animation: none !important;
+  }
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
     animation: none !important;
   }
 }

@@ -1,7 +1,12 @@
 import Link from "next/link";
+import { ViewTransition } from "react";
 import { SortSelect } from "@/components/sort-select";
 import type { ItemSort } from "@/lib/search/params";
+import { photoMorphName } from "@/lib/motion";
 import { formatBaht } from "@/lib/search/results";
+
+/** Cards in the first row of a grid load their photo straight away (4 columns at the widest). */
+export const FIRST_ROW = 4;
 
 export type ResultShop = {
   slug: string;
@@ -114,9 +119,9 @@ export function ResultsView(props: ResultsViewProps) {
           ) : (
             <>
               <ul className="grid grid-cols-2 gap-x-3 gap-y-8 px-4 pt-5 pb-10 sm:grid-cols-3 md:gap-x-5 md:px-8 md:pt-6 xl:grid-cols-4">
-                {items.map((item) => (
+                {items.map((item, i) => (
                   <li key={item.id}>
-                    <ItemCard item={item} />
+                    <ItemCard item={item} priority={i < FIRST_ROW} />
                   </li>
                 ))}
               </ul>
@@ -133,41 +138,57 @@ export function ItemCard({
   item,
   showShop = true,
   badge,
+  priority = false,
+  morph = true,
 }: {
   item: ResultItem;
   showShop?: boolean;
   /** Short label on the photo, e.g. a view count. */
   badge?: string;
+  /** Load the photo straight away (cards in the first row). */
+  priority?: boolean;
+  /** Morph the photo into the item page's photo. Off when the item already has a card higher up the page. */
+  morph?: boolean;
 }) {
+  const photo = (
+    <span className="relative block aspect-[4/5] overflow-hidden bg-photo transition-transform duration-150 ease-out group-active:scale-[0.97]">
+      {item.photo ? (
+        // Photos are already resized to WebP on upload, so they are served as-is.
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={item.photo}
+          alt={item.title}
+          loading={priority ? "eager" : "lazy"}
+          fetchPriority={priority ? "high" : undefined}
+          decoding="async"
+          className="size-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+        />
+      ) : (
+        <svg
+          viewBox="0 0 64 64"
+          aria-hidden="true"
+          className="absolute top-1/2 left-1/2 size-16 -translate-1/2 fill-none stroke-[#9a9a96] stroke-2"
+        >
+          <path d="M22 8l-14 8 5 12 7-3v31h24V25l7 3 5-12-14-8c-2 4-6 6-10 6s-8-2-10-6z" />
+        </svg>
+      )}
+      {badge && item.status !== "reserved" && (
+        <span className="wide absolute top-2 left-2 bg-highlight px-1.5 py-0.5 text-[10px]">{badge}</span>
+      )}
+      {item.status === "reserved" && (
+        <span className="wide absolute top-2 left-2 bg-print px-1.5 py-0.5 text-[10px] text-white">RESERVED</span>
+      )}
+    </span>
+  );
   return (
     <Link href={`/${item.shop_slug}/${item.id}`} className="group flex flex-col text-print">
-      <span className="relative block aspect-[4/5] overflow-hidden bg-photo">
-        {item.photo ? (
-          // Photos are already resized to WebP on upload, so they are served as-is.
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={item.photo}
-            alt={item.title}
-            loading="lazy"
-            decoding="async"
-            className="size-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
-          />
-        ) : (
-          <svg
-            viewBox="0 0 64 64"
-            aria-hidden="true"
-            className="absolute top-1/2 left-1/2 size-16 -translate-1/2 fill-none stroke-[#9a9a96] stroke-2"
-          >
-            <path d="M22 8l-14 8 5 12 7-3v31h24V25l7 3 5-12-14-8c-2 4-6 6-10 6s-8-2-10-6z" />
-          </svg>
-        )}
-        {badge && item.status !== "reserved" && (
-          <span className="wide absolute top-2 left-2 bg-highlight px-1.5 py-0.5 text-[10px]">{badge}</span>
-        )}
-        {item.status === "reserved" && (
-          <span className="wide absolute top-2 left-2 bg-print px-1.5 py-0.5 text-[10px] text-white">RESERVED</span>
-        )}
-      </span>
+      {morph ? (
+        <ViewTransition name={photoMorphName(item.id)} share="morph" default="none">
+          {photo}
+        </ViewTransition>
+      ) : (
+        photo
+      )}
       <span className="mt-2 flex items-baseline justify-between gap-2 border-t-2 border-print pt-1.5">
         <span className="cond text-[26px] leading-none group-hover:text-magenta-strong">{formatBaht(item.price_satang)}</span>
         <span className="wide text-[11px]">SIZE {item.size_label}</span>

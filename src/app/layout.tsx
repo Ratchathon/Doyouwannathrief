@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { ViewTransition } from "react";
 // Self-hosted fonts (each file covers its scripts via unicode-range).
 import "@fontsource-variable/archivo/wdth.css";
 import "@fontsource/anuphan/400.css";
@@ -42,7 +43,10 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         </a>
         <SiteHeader styles={nav.styles} shops={nav.shops} issue={issue} />
         <main id="main" className="flex flex-1 flex-col">
-          {children}
+          {/* Page changes and loaded sections crossfade; the header stays put. Styles in globals.css. */}
+          <ViewTransition update="page" default="none">
+            <div className="flex flex-1 flex-col">{children}</div>
+          </ViewTransition>
         </main>
         <SiteFooter year={year} newsletterAction={subscribeNewsletter} />
       </body>
