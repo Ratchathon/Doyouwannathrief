@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Suspense, useEffect, useId, useRef, useState } from "react";
 import { WORDMARK } from "@/lib/config";
 import { AccountIcon, CloseIcon, MenuIcon, SearchIcon } from "@/components/icons";
+import { NotificationDot } from "@/components/notification-dot";
 
 export type NavStyle = { slug: string; name_en: string; name_th?: string };
 export type NavShop = { slug: string; display_name: string; province: string };
@@ -139,8 +140,9 @@ export function SiteHeader({ styles, shops, issue }: { styles: NavStyle[]; shops
           <Link href="/search" aria-label="ค้นหา" className={iconLink}>
             <SearchIcon />
           </Link>
-          <Link href="/account" aria-label="บัญชีของฉัน" className={`${iconLink} hidden md:inline-flex`}>
+          <Link href="/account" aria-label="บัญชีของฉัน" className={`${iconLink} relative hidden md:inline-flex`}>
             <AccountIcon />
+            <NotificationDot />
           </Link>
         </div>
       </div>

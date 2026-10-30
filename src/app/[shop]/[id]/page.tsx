@@ -5,6 +5,7 @@ import { ProductSkeleton } from "@/components/skeleton";
 import { ProductView } from "@/components/product-view";
 import { getProductPage } from "@/lib/catalog/shop";
 import { formatBaht } from "@/lib/search/results";
+import { buyNow, makeOffer } from "@/lib/trade/actions";
 
 export async function generateMetadata(props: PageProps<"/[shop]/[id]">): Promise<Metadata> {
   const { shop, id } = await props.params;
@@ -21,7 +22,7 @@ async function ProductContent(props: PageProps<"/[shop]/[id]">) {
   const { shop, id } = await props.params;
   const product = await getProductPage(shop, id);
   if (!product) notFound();
-  return <ProductView product={product} />;
+  return <ProductView product={product} trade={{ buyNow, makeOffer }} />;
 }
 
 export default function ProductPage(props: PageProps<"/[shop]/[id]">) {

@@ -5,11 +5,13 @@ import { Suspense } from "react";
 import { FormSkeleton, PageShell } from "@/components/page-shell";
 import { ItemButton } from "@/components/sell/item-actions";
 import { ListingForm } from "@/components/sell/listing-form";
+import { AmountForm } from "@/components/trade";
 import { StatusLabel } from "@/components/sell/status-label";
 import { requireUser } from "@/lib/auth/guards";
 import { getNavData } from "@/lib/catalog/nav";
 import { deleteListing, saveListing } from "@/lib/products/actions";
 import { getMyItem } from "@/lib/sell/shop-owner";
+import { setOfferFloor } from "@/lib/trade/actions";
 
 export const metadata: Metadata = { title: "Edit listing" };
 
@@ -29,6 +31,11 @@ async function EditContent({ params }: PageProps<"/sell/products/[id]">) {
         </Link>
         <ItemButton action={deleteListing} productId={id} label="ลบสินค้านี้" variant="link" confirm="ลบสินค้านี้ถาวร?" />
       </div>
+      {item.status === "active" && (
+        <div className="max-w-[420px] border-2 border-print p-4">
+          <AmountForm action={setOfferFloor} fields={{ productId: id }} name="floor" label="ราคาต่ำสุดที่รับข้อเสนอ (บาท) · ปกติ 75% ของราคา ผู้ซื้อไม่เห็นตัวเลขนี้" submit="SAVE" />
+        </div>
+      )}
       {frozen ? (
         <p className="bg-highlight px-3 py-2 font-medium">สินค้าที่ติดจองหรือขายแล้วแก้ไขไม่ได้</p>
       ) : (

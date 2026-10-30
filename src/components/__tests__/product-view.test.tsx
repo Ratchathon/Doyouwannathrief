@@ -100,12 +100,33 @@ describe("ProductView", () => {
     expect(screen.getByRole("link", { name: "แจ้งปัญหาสินค้านี้" })).toHaveAttribute("href", "/report?product=i1");
   });
 
-  it("explains that buying is not open yet", () => {
+  it("buys now with a demo payment, carrying the item id", () => {
+    const buyNow = vi.fn(async () => ({ error: null }));
+    const makeOffer = vi.fn(async () => ({ error: null }));
+    render(<ProductView product={product} trade={{ buyNow, makeOffer }} />);
+    const buy = screen.getAllByRole("button", { name: "BUY NOW" })[0];
+    expect(buy).toBeEnabled();
+    expect(buy.closest("form")!.querySelector('input[name="productId"]')).toHaveValue("i1");
+    expect(screen.getAllByText(/เดโม/).length).toBeGreaterThan(0);
+  });
+
+  it("opens an offer form and shows the answer", async () => {
+    const user = userEvent.setup();
+    const buyNow = vi.fn(async () => ({ error: null }));
+    const makeOffer = vi.fn(async () => ({ error: null, message: "ส่งข้อเสนอแล้ว ร้านจะตอบภายใน 24 ชั่วโมง" }));
+    render(<ProductView product={product} trade={{ buyNow, makeOffer }} />);
+    await user.click(screen.getAllByRole("button", { name: "MAKE AN OFFER" })[0]);
+    const dialog = screen.getByRole("dialog", { name: "MAKE AN OFFER" });
+    await user.type(within(dialog).getByLabelText("ราคาที่เสนอ (บาท)"), "1500");
+    await user.click(within(dialog).getByRole("button", { name: "SEND OFFER" }));
+    expect(await within(dialog).findByRole("status")).toHaveTextContent("ส่งข้อเสนอแล้ว");
+  });
+
+  it("explains that buying is not open where no trade actions are wired", () => {
     render(<ProductView product={product} />);
     for (const name of ["BUY NOW", "MAKE AN OFFER"]) {
       for (const button of screen.getAllByRole("button", { name })) expect(button).toBeDisabled();
     }
-    expect(screen.getAllByText(/ระบบสั่งซื้อกำลังจะเปิด/).length).toBeGreaterThan(0);
   });
 
   it.each([
