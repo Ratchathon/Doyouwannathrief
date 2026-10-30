@@ -15,6 +15,8 @@ export type DiscoverData = {
 };
 
 const seeAll = "wide py-2 text-xs hover:text-magenta-strong";
+/** Cards of the first row that fit on a wide screen; their photos load straight away. */
+const ROW_IN_VIEW = 5;
 
 function Row({
   title,
@@ -66,7 +68,7 @@ function Items({
     <ul className="-mx-4 flex snap-x scroll-px-4 gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:none] md:-mx-10 md:scroll-px-10 md:gap-5 md:px-10">
       {items.map((item, i) => (
         <li key={item.id} className="w-[150px] shrink-0 snap-start md:w-[230px]">
-          <ItemCard item={item} badge={badge?.(item)} morph={claim(item.id)} priority={priority && i < 5} />
+          <ItemCard item={item} badge={badge?.(item)} morph={claim(item.id)} priority={priority && i < ROW_IN_VIEW} />
         </li>
       ))}
     </ul>
