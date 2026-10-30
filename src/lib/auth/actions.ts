@@ -50,13 +50,16 @@ export async function signUpWithPassword(_prev: FormState | null, form: FormData
   const password = validatePassword(text(form, "password"));
   if (!password.ok) return fail(password.error);
 
+  const next = safeNextPath(text(form, "next"));
   const supabase = await createClient();
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email: email.value,
     password: password.value,
-    options: { emailRedirectTo: callbackUrl(safeNextPath(text(form, "next"))) },
+    options: { emailRedirectTo: callbackUrl(next) },
   });
   if (error) return fail(fromSupabaseError(error));
+  // With email confirmation turned off, Supabase signs the new user straight in.
+  if (data?.session) redirect(next);
 
   return { error: null, sent: true };
 }
@@ -117,4 +120,21 @@ export async function signOut(): Promise<void> {
   const supabase = await createClient();
   await supabase.auth.signOut();
   redirect("/");
+}
+
+/** Demo accounts for people trying the site, and where each one starts. */
+const DEMO_ROLES: Record<string, string> = { buyer: "/", shop: "/sell", admin: "/admin" };
+
+export async function signInAsDemo(_prev: FormState | null, form: FormData): Promise<FormState> {
+  const password = process.env.DEMO_PASSWORD;
+  if (!password) return { error: "บัญชีทดลองยังไม่เปิดใช้" };
+  const role = text(form, "role");
+  if (!Object.hasOwn(DEMO_ROLES, role)) return { error: "ไม่มีบัญชีทดลองนี้" };
+
+  const domain = process.env.DEMO_EMAIL_DOMAIN || "example.com";
+  const supabase = await createClient();
+  const { error } = await supabase.auth.signInWithPassword({ email: `demo-${role}@${domain}`, password });
+  if (error) return { error: "เข้าบัญชีทดลองไม่สำเร็จ ลองใหม่อีกครั้ง" };
+
+  redirect(DEMO_ROLES[role]);
 }

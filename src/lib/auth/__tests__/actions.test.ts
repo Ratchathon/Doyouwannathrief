@@ -31,6 +31,7 @@ const {
   requestPasswordReset,
   sendMagicLink,
   signInWithGoogle,
+  signInAsDemo,
   signInWithPassword,
   signOut,
   signUpWithPassword,
@@ -177,5 +178,41 @@ describe("signOut", () => {
     const to = await redirectOf(signOut());
     expect(auth.signOut).toHaveBeenCalled();
     expect(to).toBe("/");
+  });
+});
+
+describe("signUpWithPassword without email confirmation", () => {
+  it("goes straight to the next page when Supabase signs the new user in", async () => {
+    auth.signUp.mockResolvedValue({ data: { session: { access_token: "t" } }, error: null });
+    const to = await redirectOf(
+      signUpWithPassword(null, form({ email: "new@example.com", password: "abcd1234", next: "/sell/apply" })),
+    );
+    expect(to).toBe("/sell/apply");
+  });
+});
+
+describe("signInAsDemo", () => {
+  it.each([
+    ["buyer", "/"],
+    ["shop", "/sell"],
+    ["admin", "/admin"],
+  ])("signs in as the demo %s and opens %s", async (role, page) => {
+    vi.stubEnv("DEMO_PASSWORD", "demo-secret-1");
+    const to = await redirectOf(signInAsDemo(null, form({ role })));
+    expect(auth.signInWithPassword).toHaveBeenCalledWith({ email: `demo-${role}@example.com`, password: "demo-secret-1" });
+    expect(to).toBe(page);
+  });
+
+  it("refuses unknown roles", async () => {
+    vi.stubEnv("DEMO_PASSWORD", "demo-secret-1");
+    const state = await signInAsDemo(null, form({ role: "owner" }));
+    expect(state.error).toMatch(/บัญชีทดลอง/);
+    expect(auth.signInWithPassword).not.toHaveBeenCalled();
+  });
+
+  it("says demo accounts are off when no demo password is configured", async () => {
+    vi.stubEnv("DEMO_PASSWORD", "");
+    const state = await signInAsDemo(null, form({ role: "buyer" }));
+    expect(state.error).toBe("บัญชีทดลองยังไม่เปิดใช้");
   });
 });
