@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { FormSkeleton, PageShell } from "@/components/page-shell";
+import { TradeButton } from "@/components/trade";
+import { resetDemo } from "@/lib/admin/actions";
 import { requireAdmin } from "@/lib/auth/guards";
 import { createClient } from "@/lib/supabase/server";
 
@@ -11,25 +13,62 @@ async function AdminContent() {
   await requireAdmin();
   const supabase = await createClient();
   const [pending, reports] = await Promise.all([
-    supabase.from("shops").select("id", { count: "exact", head: true }).eq("status", "pending"),
-    supabase.from("reports").select("id", { count: "exact", head: true }).neq("status", "closed"),
+    supabase
+      .from("shops")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "pending"),
+    supabase
+      .from("reports")
+      .select("id", { count: "exact", head: true })
+      .neq("status", "closed"),
   ]);
   const tiles: [string, string, number, string][] = [
-    ["/admin/shops", "SHOP APPLICATIONS", pending.count ?? 0, "ร้านที่รออนุมัติ"],
+    [
+      "/admin/shops",
+      "SHOP APPLICATIONS",
+      pending.count ?? 0,
+      "ร้านที่รออนุมัติ",
+    ],
     ["/admin/reports", "REPORTS", reports.count ?? 0, "เรื่องที่ยังไม่ปิด"],
   ];
   return (
-    <nav aria-label="Admin" className="grid gap-4 sm:grid-cols-2">
-      {tiles.map(([href, title, n, note]) => (
-        <Link key={href} href={href} className="flex items-end justify-between gap-4 border-2 border-print bg-sheet p-5 hover:bg-highlight">
-          <span className="flex flex-col">
-            <span className="cond text-[40px] leading-none">{title}</span>
-            <span className="mt-1 text-sm">{note}</span>
-          </span>
-          <span className="cond tabular text-[72px] leading-[0.85] text-magenta">{n}</span>
-        </Link>
-      ))}
-    </nav>
+    <>
+      <nav aria-label="Admin" className="grid gap-4 sm:grid-cols-2">
+        {tiles.map(([href, title, n, note]) => (
+          <Link
+            key={href}
+            href={href}
+            className="flex items-end justify-between gap-4 border-2 border-print bg-sheet p-5 hover:bg-highlight"
+          >
+            <span className="flex flex-col">
+              <span className="cond text-[40px] leading-none">{title}</span>
+              <span className="mt-1 text-sm">{note}</span>
+            </span>
+            <span className="cond tabular text-[72px] leading-[0.85] text-magenta">
+              {n}
+            </span>
+          </Link>
+        ))}
+      </nav>
+      <section
+        aria-labelledby="reset"
+        className="mt-12 max-w-[560px] border-t-2 border-print pt-4"
+      >
+        <h2 id="reset" className="cond text-[36px] leading-none">
+          RESET DEMO
+        </h2>
+        <p className="mt-2 mb-4 text-sm">
+          ลบคำสั่งซื้อ ข้อเสนอ และการแจ้งเตือนทั้งหมด
+          ของที่ถูกซื้อในเดโมกลับมาขายต่อ
+        </p>
+        <TradeButton
+          action={resetDemo}
+          fields={{}}
+          label="RESET DEMO DATA"
+          variant="outline"
+        />
+      </section>
+    </>
   );
 }
 
