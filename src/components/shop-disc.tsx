@@ -38,7 +38,7 @@ export function ShopDiscRow({
     <ul className={list}>
       {shops.map((shop) => (
         <li key={shop.slug} className={`${width} shrink-0 snap-start`}>
-          <Link href={`/${shop.slug}`} className="group flex flex-col items-center gap-2.5 text-center text-print">
+          <Link href={`/${shop.slug}`} prefetch className="group flex flex-col items-center gap-2.5 text-center text-print">
             <span className="relative">
               <span
                 aria-hidden="true"

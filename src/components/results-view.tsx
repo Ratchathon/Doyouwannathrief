@@ -181,7 +181,8 @@ export function ItemCard({
     </span>
   );
   return (
-    <Link href={`/${item.shop_slug}/${item.id}`} className="group flex flex-col text-print">
+    // prefetch: the item page arrives fully drawn, so the photo can morph instead of a skeleton flashing.
+    <Link href={`/${item.shop_slug}/${item.id}`} prefetch className="group flex flex-col text-print">
       {morph ? (
         <ViewTransition name={photoMorphName(item.id)} share="morph" default="none">
           {photo}
