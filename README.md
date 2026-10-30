@@ -1,7 +1,7 @@
 # doyouwannathrift
 
 **A curated marketplace for Thai secondhand clothing shops, designed like a street-snap magazine.**
-Live demo: <https://doyouwannathrift.vercel.app> — press **TRY THE DEMO** on the log-in page to look around as a buyer, a shop or an admin.
+Live demo: <https://doyouwannathrift.vercel.app> — on the log-in page, press **TRY AS BUYER**, **TRY AS SHOP** or **TRY AS ADMIN** to look around without signing up.
 
 > 🇹🇭 **ภาษาไทยโดยย่อ:** เว็บรวมร้านเสื้อผ้ามือสองที่คัดสไตล์แล้วจากทั่วไทย ร้านต้องผ่านการอนุมัติ ทุกชิ้นถ่ายรูปตามมาตรฐานเดียวกัน (หน้า หลัง ป้าย ตำหนิ) ผู้ซื้อกดซื้อหรือยื่นข้อเสนอราคาได้ และเงินถูกพักไว้จนกว่าจะได้ของ
 > โปรเจกต์นี้เป็นผลงานเดโม ร้านและสินค้าเป็นตัวอย่าง การจ่ายเงินและการส่งของเป็นการจำลองทั้งหมด
